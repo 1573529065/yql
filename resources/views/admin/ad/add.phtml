@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">添加广告</div>
+                <div class="layui-card-body" pad15>
+                    <div class="layui-form" lay-filter="">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">广告简称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="name" value="" placeholder="请输入广告简称"
+                                       lay-verify="required" lay-verType="tips" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">广告主</label>
+                            <div class="layui-input-inline">
+                                <select name="owner_id" lay-verify="required" lay-verType="tips">
+                                    <option value="">请选择广告主</option>
+                                    <?php foreach ($adowner_list as $row) { ?>
+                                        <option value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">广告位置</label>
+                            <div class="layui-input-inline">
+                                <select name="zoneid" lay-verify="required" lay-verType="tips" lay-filter="adzone">
+                                    <option value="">请选择广告位</option>
+                                    <?php foreach ($adzone_list as $row) { ?>
+                                        <option data-width="<?php echo $row['width']; ?>"
+                                                data-height="<?php echo $row['height']; ?>"
+                                                data-iwidth="<?php echo $row['icon_width']; ?>"
+                                                data-iheight="<?php echo $row['icon_height']; ?>"
+                                                value="<?php echo $row['id']; ?>"><?php echo $row['title']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">所属平台</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="platform" value="1" title="安卓" lay-filter="platform" checked>
+                                <input type="radio" name="platform" value="2" title="iOS" lay-filter="platform">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" id="hidden-appid" style="display: none;">
+                            <label class="layui-form-label">苹果appid</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="appid" value="" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">广告标题</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="title" value="" placeholder="请输入广告简称"
+                                       lay-verify="required" lay-verType="tips" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">描述颜色</label>
+                            <div class="layui-input-inline" style="width: 152px;">
+                                <input type="text" name="des_color" value="#999999" placeholder="请选择颜色"
+                                       lay-verify="required" lay-verType="tips" class="layui-input"
+                                       id="colorpicker-form-input">
+                            </div>
+                            <div class="layui-inline" style="left: -11px;">
+                                <div id="colorpicker-des"></div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">描述</label>
+                            <div class="layui-input-block">
+                                <textarea class="layui-textarea" name="des" placeholder="请输入描述"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item" style="display: none;" id="icon-img-row">
+                            <label class="layui-form-label"></label>
+                            <div class="layui-input-block">
+                                <img src="" style="max-height: 120px;" id="icon-img">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">广告图标</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="icon" value="" autocomplete="off" readonly class="layui-input">
+                            </div>
+                            <div class="layui-input-inline" id="container_img_icon">
+                                <button type="button" class="layui-btn layui-btn-primary" id="selectfiles_img_icon"><i
+                                            class="layui-icon">&#xe67c;</i>上传文件
+                                </button>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux" id="icon-size">尺寸0*0</div>
+                        </div>
+
+                        <div class="layui-form-item" style="display: none;" id="ad-img-row">
+                            <label class="layui-form-label"></label>
+                            <div class="layui-input-block">
+                                <img src="" style="max-height: 120px;" id="ad-img">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">广告素材</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="img" value="" autocomplete="off" readonly class="layui-input">
+                            </div>
+                            <div class="layui-input-inline" id="container_img">
+                                <button type="button" class="layui-btn layui-btn-primary" id="selectfiles_img"><i
+                                            class="layui-icon">&#xe67c;</i>上传文件
+                                </button>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux" id="ad-size">尺寸0*0</div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">落地页类型</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="ad_type" lay-filter="ad_type" value="1" title="下载包" checked>
+                                <input type="radio" name="ad_type" lay-filter="ad_type" value="2" title="H5">
+                                <input type="radio" name="ad_type" lay-filter="ad_type" value="3" title="APP内跳">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" style="display: none;" id="hide-h5-style">
+                            <label class="layui-form-label">H5样式</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="h5_style" value="1" title="H5自带头">
+                                <input type="radio" name="h5_style" value="2" title="原生带分享">
+                                <input type="radio" name="h5_style" value="3" title="原生右关闭">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" style="display: none;" id="hide-intent">
+                            <label class="layui-form-label">内跳标识</label>
+                            <div class="layui-input-inline">
+                                <select id="intent" name="intent" lay-filter="intent">
+                                    <option value="">请选择</option>
+                                    <?php foreach ($app_intents as $intent) { ?>
+                                        <option value="<?= $intent['val'] ?>"><?= $intent['title'] ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">落地页标识</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="link" name="link" value=""  placeholder="请输入落地页标识"
+                                       lay-verify="required" lay-verType="tips" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">展示权值</label>
+                            <div class="layui-input-inline">
+                                <select name="weight">
+                                    <?php for ($i = 10; $i >= 1; $i--) { ?>
+                                        <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">展示频率</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="display_frequency" value="" placeholder="请输入展示频率"
+                                       lay-verify="required" lay-verType="tips" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">填写天数，N天展示一次</div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">有效期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="start_time" id="start_time" value="<?= $start_time ?>"
+                                       placeholder="开始日期" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid">-</div>
+                            <div class="layui-input-inline">
+                                <input type="text" name="end_time" id="end_time" value="<?= $end_time ?>"
+                                       placeholder="结束日期" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">是否展现</label>
+                            <div class="layui-input-inline">
+                                <input type="hidden" name="status" value="0">
+                                <input type="checkbox" value="1" name="status" lay-skin="switch" lay-text="是|否">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-submit lay-filter="ad-add">提交</button>
+                                <a class="layui-btn layui-btn-primary" href="javascript:void(0);"
+                                   onclick="history.go(-1)">返回</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script type="text/javascript" src="/common/js/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script type="text/javascript" src="/common/js/oss.upload.lib.js?t=20190402"></script>
+<script src="/layuiadmin/common.js"></script>
+<script>
+    layui.use(['form', 'colorpicker', 'laydate'], function () {
+        var $ = layui.$
+            , form = layui.form
+            , layer = layui.layer
+            , colorpicker = layui.colorpicker
+            , laydate = layui.laydate;
+
+        //图标上传
+        var set_img_icon = function (imgurl) {
+            $('#icon-img-row').show();
+            $('input[name="icon"]').val(imgurl);
+            $('#icon-img').attr('src', imgurl).show();
+        }
+        //素材上传
+        var set_img = function (imgurl) {
+            $('#ad-img-row').show();
+            $('input[name="img"]').val(imgurl);
+            $('#ad-img').attr('src', imgurl).show();
+        }
+
+        var icon_upload = new ossUpload();
+        icon_upload.init({
+            container_id: 'container_img_icon',
+            browse_button: 'selectfiles_img_icon',
+            serverUrl: '/oss/get_token',
+            width: 0,
+            height: 0,
+            wh_model: 'eq',
+            callback: set_img_icon,
+        });
+
+        var img_upload = new ossUpload();
+        img_upload.init({
+            container_id: 'container_img',
+            browse_button: 'selectfiles_img',
+            serverUrl: '/oss/get_token',
+            width: 0,
+            height: 0,
+            wh_model: 'eq',
+            callback: set_img
+        });
+
+        //切换平台
+        form.on('radio(platform)', function (data) {
+            if (data.value == '2') {
+                $('#hidden-appid').show();
+            } else {
+                $('#hidden-appid').hide();
+            }
+        })
+
+        //切换落地页类型
+        form.on('radio(ad_type)', function (data) {
+            switch (data.value) {
+                case '2':
+                    $('#hide-h5-style').show();
+                    $('#hide-intent').hide();
+                    break;
+                case '3':
+                    $('#hide-h5-style').hide();
+                    $('#hide-intent').show();
+                    break;
+                default:
+                    $('#hide-h5-style').hide();
+                    $('#hide-intent').hide();
+                    break;
+            }
+        });
+
+        //切换跳转
+        form.on('select(intent)', function (data) {
+            $('#link').val(data.value);
+        });
+
+        //切换广告位
+        form.on('select(adzone)', function (data) {
+            var option = data.elem[data.elem.selectedIndex];
+            var width = option.getAttribute('data-width')
+                , height = option.getAttribute('data-height')
+                , iwidth = option.getAttribute('data-iwidth')
+                , iheight = option.getAttribute('data-iheight');
+            console.log(width, height, iwidth, iheight);
+            $('#ad-size').text('尺寸' + width + '*' + height);
+            $('#icon-size').text('尺寸' + iwidth + '*' + iheight);
+
+            icon_upload.setOption({
+                width: iwidth,
+                height: iheight,
+                wh_model: 'eq'
+            })
+            img_upload.setOption({
+                width: width,
+                height: height,
+                wh_model: 'eq'
+            })
+        });
+
+        /*form.verify({
+            nickname: [/^[\S]{2,16}$/, '昵称最少2个字符'],
+        })*/
+
+        form.on('submit(ad-add)', function (obj) {
+            $.ajax({
+                url: '/ad/add',
+                type: "POST",
+                dataType: "JSON",
+                data: obj.field,
+                success: function (resp) {
+                    if (resp.code == 200) {
+                        layer.msg('添加成功', {icon: 1, time: 1000}, function () {
+                            location.href = '/ad/index';
+                        });
+                    } else {
+                        layer.msg(resp.msg, {icon: 5, time: 1000});
+                    }
+                }
+            })
+        });
+
+
+        //颜色选择器
+        colorpicker.render({
+            elem: '#colorpicker-des'
+            , color: '#999999'
+            , done: function (color) {
+                $('#colorpicker-form-input').val(color);
+            }
+        });
+
+        //开始日期
+        var insStart = laydate.render({
+            elem: '#start_time'
+            , done: function (value, date) {
+                //更新结束日期的最小日期
+                insEnd.config.min = lay.extend({}, date, {
+                    month: date.month - 1
+                });
+
+                //自动弹出结束日期的选择器
+                insEnd.config.elem[0].focus();
+            }
+        });
+
+        //结束日期
+        var insEnd = laydate.render({
+            elem: '#end_time'
+            , done: function (value, date) {
+                //更新开始日期的最大日期
+                insStart.config.max = lay.extend({}, date, {
+                    month: date.month - 1
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">编辑游戏</div>
+                <div class="layui-card-body">
+                    <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                        <ul class="layui-tab-title">
+                            <li class="<?= $tab == 1 ? 'layui-this' : '' ?>"><a href="/game/edit?tab=1&id=<?= $id ?>&p=<?= $p ?>">基本信息</a></li>
+                            <li class="<?= $tab == 2 ? 'layui-this' : '' ?>"><a href="/game/edit?tab=2&id=<?= $id ?>&p=<?= $p ?>">游戏包信息</a></li>
+                            <li class="<?= $tab == 3 ? 'layui-this' : '' ?>"><a href="/game/edit?tab=3&id=<?= $id ?>&p=<?= $p ?>">研发商与分成</a></li>
+                        </ul>
+                        <div class="layui-tab-content">
+                            <div class="layui-tab-item <?= $tab == 1 ? 'layui-show' : '' ?>">
+                                <div class="layui-form" lay-filter="">
+                                    <input type="hidden" name="id" value="<?= $info['id'] ?>">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">游戏名</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="name" value="<?= $info['name'] ?>" placeholder="请输入游戏名"
+                                                   lay-verify="required" lay-verType="tips" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">游戏主类</label>
+                                        <div class="layui-input-inline">
+                                            <select name="game_type" lay-verify="required" lay-verType="tips">
+                                                <?php foreach ($gameType as $v) { ?>
+                                                    <option value="<?= $v['id'] ?>" <?= $info['game_type'] == $v['id'] ? 'selected = "selected"' : '' ?> ><?= $v['name'] ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">系统平台</label>
+                                        <div class="layui-input-block">
+                                            <input type="radio" name="platform" <?= $info['platform'] == 1 ? 'checked' : '' ?> value="1" title="安卓">
+                                            <input type="radio" name="platform" <?= $info['platform'] == 2 ? 'checked' : '' ?> value="2" title="IOS">
+<!--                                            <input type="radio" name="platform" --><?//= $info['platform'] == 3 ? 'checked' : '' ?><!-- value="3" title="H5">-->
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">包类型</label>
+                                        <div class="layui-input-block">
+                                            <input type="radio" name="package_type" <?= $info['package_type'] == 1 ? 'checked' : '' ?> value="1" title="原生">
+                                            <input type="radio" name="package_type" <?= $info['package_type'] == 2 ? 'checked' : '' ?> value="2" title="微端">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">屏幕设置</label>
+                                        <div class="layui-input-block">
+                                            <input type="radio" name="screen_type" <?= $info['screen_type'] == 1 ? 'checked' : '' ?> value="1" title="横屏">
+                                            <input type="radio" name="screen_type" <?= $info['screen_type'] == 2 ? 'checked' : '' ?> value="2" title="竖屏">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">上传ICON</label>
+                                        <div class="layui-input-inline" id="icon_pictures" style="width: 100px">
+                                            <input type="hidden" name="icon" value="<?= $info['icon'] ?>">
+                                            <img src="<?= $info['icon'] ?>" class="layui-upload-img" id="icon_img-badge"/>
+                                        </div>
+                                        <div class="layui-input-inline" style="top: 53px;width: 101px;">
+                                            <button type="button" class="layui-btn layui-btn-primary" id="icon_btn_badge">
+                                                <i class="layui-icon">&#xe67c;</i>上传图片
+                                            </button>
+                                        </div>
+                                        <div class="layui-form-mid layui-word-aux" style="top: 54px">（等比例图片，不要超过100K）</div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">上传视频</label>
+                                        <div class="layui-input-inline" id="video_upload">
+                                            <input type="test" readonly="readonly" name="video" value="<?= $info['video'] ?>"
+                                                   class="layui-input" lay-verType="tips" autocomplete="off">
+                                        </div>
+                                        <div class="layui-input-inline" style="width: 200px;">
+                                            <button type="button" class="layui-btn layui-btn-primary" id="video_upload_btn">
+                                                <i class="layui-icon">&#xe67c;</i>上传视频
+                                            </button>
+                                            <button class="layui-btn" id="preview">预览</button>
+                                        </div>
+                                        <div class="layui-form-mid layui-word-aux">（视频只允许MP4格式，视频不超过15M）</div>
+                                    </div>
+
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">上传图片</label>
+                                        <div class="layui-card-body">
+                                            <div class="layui-upload layui-input-inline" style="width: 770px">
+                                                <button type="button" class="layui-btn" id="imgs-upload_btn">多图片上传</button>
+                                                <input class="layui-upload-file" type="file" accept="undefined" name="file" multiple="">
+                                                <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+                                                    预览图：
+                                                    <div class="layui-upload-list" id="imgs-upload-list">
+                                                        <?php foreach ($info['imgs'] as $v) { ?>
+                                                            <span>
+                                                                <input type="hidden" name="imgs[]" value="<?= $v ?>">
+                                                                <img src="<?= $v ?>" class="layui-upload-img img_del">
+                                                                <em>删除</em>
+                                                            </span>
+                                                        <?php } ?>
+                                                    </div>
+                                                </blockquote>
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-mid layui-word-aux" style="top: 74px;">（图片标准尺寸：480*800）
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">游戏类别</label>
+                                        <input type="hidden" name="game_cates" value="<?= $info['game_cates'] ?>" id="cate_ids">
+                                        <div id="game_cate">
+                                            <button data-type="cate_layout" id="game_cate_btn" class="layui-btn ">类别选择</button>
+                                            <div id="game_cate_names" style="display:inline">
+                                                <?php foreach ($info['game_cates_info'] as $v) { ?>
+                                                    <span class="layui-btn layui-btn-primary layui-btn-sm"><?= $v['name'] ?>
+                                                        <i class="layui-icon" style="color:red;">&#xe640;</i>
+                                                    </span>
+                                                <?php } ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">一句话简介</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="title" value="<?= $info['title'] ?>" placeholder="请输入简介" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">游戏标签</label>
+                                        <input type="hidden" name="tags" value="<?= $info['tags'] ?>" id="tags_ids">
+                                        <div id="game_tags">
+                                            <button data-type="tags_layout" id="game_tags_btn" class="layui-btn ">标签选择</button>
+                                            <div id="game_tags_names" style="display:inline">
+                                                <?php foreach ($info['game_tags_info'] as $v) { ?>
+                                                    <span class="layui-btn layui-btn-primary layui-btn-sm"><?= $v['name'] ?>
+                                                        <i class="layui-icon" style="color:red;">&#xe640;</i>
+                                                    </span>
+                                                <?php } ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">游戏介绍</label>
+                                        <div class="layui-input-block">
+                                            <textarea name="des" placeholder="请输入游戏介绍" class="layui-textarea"><?= $info['des'] ?></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">VIP介绍</label>
+                                        <div class="layui-input-block">
+                                            <textarea name="vip_des" placeholder="请输入VIP介绍" class="layui-textarea"><?= $info['vip_des'] ?></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">返利说明</label>
+                                        <div class="layui-input-block">
+                                            <textarea name="rebate_des" placeholder="请输入返利说明" class="layui-textarea"><?= $info['rebate_des'] ?></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">福利介绍</label>
+                                        <div class="layui-input-block">
+                                            <textarea name="welfare_des" placeholder="请输入福利介绍" class="layui-textarea"><?= $info['welfare_des'] ?></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">推广介绍</label>
+                                        <div class="layui-input-block">
+                                            <textarea name="tg_des" placeholder="请输入推广介绍" class="layui-textarea"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">通用代金券</label>
+                                        <div class="layui-input-block">
+                                            <input type="radio" name="support_all_coupon" <?= $info['support_all_coupon'] == 1 ? 'checked' : '' ?> value="1" title="支持通用代金券">
+                                            <input type="radio" name="support_all_coupon" <?= $info['support_all_coupon'] == 0 ? 'checked' : '' ?> value="0" title="不支持通用代金券">
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">是否推广</label>
+                                        <div class="layui-input-block">
+                                            <input type="radio" name="is_promotion" <?= $info['is_promotion'] == 1 ? 'checked' : '' ?> value="1" title="是">
+                                            <input type="radio" name="is_promotion" <?= $info['is_promotion'] == 0 ? 'checked' : '' ?> value="0" title="否">
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">推荐位</label>
+                                        <div class="layui-input-block">
+                                            <?php foreach ($recommendType as $value) { ?>
+                                                <input type="checkbox" name="recommendType[]" value="<?= $value['id'] ?>"
+                                                    <?php echo in_array($value['id'], $recommendGameIds) ? "checked='checked'" : '' ?> title="<?= $value['name'] ?>" lay-skin="primary">
+                                            <?php } ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button class="layui-btn" lay-submit lay-filter="game-edit">编辑基本信息</button>
+                                            <a class="layui-btn layui-btn-primary" href="/game/index?p=<?= $p ?>">返回</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="layui-tab-item <?= $tab == 2 ? 'layui-show' : '' ?>">
+                                <div class="layui-form" lay-filter="">
+                                    <input type="hidden" name="id" value="<?= $info['id'] ?>">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">APPID</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" readonly value="<?= $info['id'] ?>"
+                                                   lay-verType="tips" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">APPKEY</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="appkey" id="appkey" readonly value="<?= $gameDetail['appkey'] ?>"
+                                                   lay-verType="tips" autocomplete="off" class="layui-input">
+                                        </div>
+                                        <div class="layui-input-inline">
+                                            <button class="layui-btn copyAppkey" data-clipboard-target="#appkey">复制</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">APPKEY2</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="appkey_server" id="appkey_server" readonly value="<?= $gameDetail['appkey_server'] ?>"
+                                                   lay-verType="tips" autocomplete="off" class="layui-input">
+                                        </div>
+                                        <div class="layui-input-inline" style="width: 60px;">
+                                            <button class="layui-btn copyAppkeyServer" data-clipboard-target="#appkey_server">复制</button>
+                                        </div>
+                                        <div class="layui-form-mid layui-word-aux">（服务器端）</div>
+                                    </div>
+
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">充值回调地址</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="callback_url" value="<?= $gameDetail['callback_url'] ?>" placeholder="http://www.baidu.com"
+                                                   lay-verType="tips" autocomplete="off" class="layui-input">
+                                        </div>
+                                        <div class="layui-form-mid layui-word-aux"></div>
+                                    </div>
+
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">母包名称</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="package_name" value="<?= $info['package_name'] ?>" lay-verType="tips" autocomplete="off" class="layui-input">
+                                        </div>
+                                        <div class="layui-form-mid layui-word-aux">如：com.kepan.xxx.apk</div>
+                                    </div>
+
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">初始包名</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="origin_package_name" value="<?= $info['origin_package_name'] ?>"
+                                                   lay-verType="tips" autocomplete="off" class="layui-input">
+                                        </div>
+                                        <div class="layui-form-mid layui-word-aux">如：com.kepan.xxx</div>
+                                    </div>
+
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">版本名</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="version_name" value="<?= $info['version_name'] ?>"
+                                                   lay-verType="tips" autocomplete="off" class="layui-input">
+                                        </div>
+                                        <div class="layui-form-mid layui-word-aux">如：1.0.0</div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">版本号</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="version" value="<?= $info['version'] ?>"
+                                                   lay-verType="tips" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">包大小</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="package_size" value="<?= $info['package_size'] ?>"
+                                                   lay-verType="tips" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">下载地址</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="download_url" value="<?= $info['download_url'] ?>" placeholder="http://www.baidu.com"
+                                                   autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">IOS描述文件</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="plist_url" value="<?= $info['plist_url'] ?>" placeholder="http://www.baidu.com"
+                                                   lay-verType="tips" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">是否分包</label>
+                                        <div class="layui-input-block">
+                                            <input type="radio" name="deploy_package" <?= $info['deploy_package'] == 1 ? 'checked' : '' ?> value="1" title="是">
+                                            <input type="radio" name="deploy_package" <?= $info['deploy_package'] == 0 ? 'checked' : '' ?> value="0" title="否">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">分包地址</label>
+                                        <div class="layui-input-block">
+                                            <input type="radio" name="deploy_package_type" <?= $info['deploy_package_type'] == 1 ? 'checked' : '' ?> value="1" title="普通地址">
+                                            <input type="radio" name="deploy_package_type" <?= $info['deploy_package_type'] == 2 ? 'checked' : '' ?> value="2" title="腾讯云">
+                                            <input type="radio" name="deploy_package_type" <?= $info['deploy_package_type'] == 3 ? 'checked' : '' ?> value="3" title="七牛云">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button class="layui-btn" lay-submit lay-filter="edit_package_info">提交游戏包信息</button>
+                                            <a class="layui-btn layui-btn-primary" href="/game/index?p=<?= $p ?>">返回</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="layui-tab-item <?= $tab == 3 ? 'layui-show' : '' ?>">
+                                <div class="layui-form" lay-filter="">
+                                    <input type="hidden" name="id" value="<?= $info['id'] ?>">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">研发商</label>
+                                        <div class="layui-input-inline">
+                                            <input type="hidden" name="developer_id" value="<?= $developerInfo['id'] ?>">
+                                            <input type="text" name="developer_name" id="developer_name" value="<?= $developerInfo['company_name'] ?>"
+                                                   lay-verify="required" lay-verType="tips" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">研发商分成</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="developer_fee_rate" value="<?= $info['developer_fee_rate'] ?>"
+                                                   lay-verify="required" lay-verType="tips" autocomplete="off" class="layui-input">
+                                        </div>
+                                        <div class="layui-form-mid layui-word-aux">%</div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">渠道费率</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="channel_fee_rate" value="<?= $info['channel_fee_rate'] ?>"
+                                                   lay-verify="required" lay-verType="tips" autocomplete="off" class="layui-input">
+                                        </div>
+                                        <div class="layui-form-mid layui-word-aux">%</div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">CPS分成比例</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="cps_rate" value="<?= $info['cps_rate'] ?>"
+                                                   lay-verify="required" lay-verType="tips" autocomplete="off" class="layui-input">
+                                        </div>
+                                        <div class="layui-form-mid layui-word-aux">%</div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">折扣比例</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="discount" value="<?= $info['discount'] ?>"
+                                                   lay-verify="required" lay-verType="tips" autocomplete="off" class="layui-input">
+                                        </div>
+                                        <div class="layui-form-mid layui-word-aux">%</div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button class="layui-btn" lay-submit lay-filter="edit_divided_info">提交研发商与分成</button>
+                                            <a class="layui-btn layui-btn-primary" href="/game/index?p=<?= $p ?>">返回</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!--分类选择弹框-->
+<div class="layui-form" lay-filter="layuiadmin-form-role" id="layuiadmin-form-role" style="display:none">
+    <?php foreach ($gameTopic as $value) { ?>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><?= $value['name'] ?></label>
+            <div class="layui-input-block">
+                <?php foreach ($value['list'] as $v) { ?>
+                    <input type="checkbox" name="<?= $v['id'] ?>" value="<?= $v['name'] ?>" lay-skin="primary" title="<?= $v['name'] ?>">
+                <?php } ?>
+            </div>
+        </div>
+    <?php } ?>
+</div>
+
+<!--标签选择-->
+<div class="layui-form" lay-filter="layuiadmin-form-tags" id="layuiadmin-form-tags" style="display:none">
+    <div class="layui-form-item">
+        <label class="layui-form-label">请选择标签</label>
+        <div class="layui-input-block">
+            <?php foreach ($tags as $v) { ?>
+                <input type="checkbox" name="<?= $v['id'] ?>" value="<?= $v['name'] ?>" lay-skin="primary" title="<?= $v['name'] ?>">
+            <?php } ?>
+        </div>
+    </div>
+</div>
+
+<!--视频预览-->
+<div id="preview-video" style="height: 100%; display: none">
+    <div style="display: flex;justify-content: center; align-items: center; height: 100%; ">
+        <video src="<?= $info['video'] ?>" poster="" controls style="max-height:480px; max-width:480px;display:block;cursor:pointer;"></video>
+    </div>
+</div>
+
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script type="text/javascript" src="/common/js/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script type="text/javascript" src="/common/js/oss.upload.lib.js?t=20190402"></script>
+<script type="text/javascript" src="/common/js/clipboard.min.js"></script>
+<script>
+    layui.extend({
+        autocomplete: '/layuiadmin/autocomplete/autocomplete'
+    }).use(['form', 'layer', 'element', 'autocomplete'], function () {
+            var $ = layui.$,
+                form = layui.form,
+                layer = layui.layer,
+                element = layui.element,
+                autocomplete = layui.autocomplete;
+
+            element.render();
+
+            form.on('submit(game-edit)', function (obj) {
+                $.ajax({
+                    url: '/game/edit',
+                    type: "POST",
+                    dataType: "JSON",
+                    data: obj.field,
+                    success: function (resp) {
+                        if (resp.code == 200) {
+                            layer.msg('编辑基本信息成功', {icon: 1, time: 1000}, function () {
+                                location.href = '/game/index';
+                            });
+                        } else {
+                            layer.msg(resp.msg, {icon: 5, time: 1000});
+                        }
+                    }
+                })
+            });
+
+            form.on('submit(edit_package_info)', function (obj) {
+                $.ajax({
+                    url: '/game/edit_package_info',
+                    type: "POST",
+                    dataType: "JSON",
+                    data: obj.field,
+                    success: function (resp) {
+                        if (resp.code == 200) {
+                            layer.msg('编辑游戏包信息成功', {icon: 1, time: 1000}, function () {
+                                location.href = '/game/index';
+                            });
+                        } else {
+                            layer.msg(resp.msg, {icon: 5, time: 1000});
+                        }
+                    }
+                })
+            });
+
+            form.on('submit(edit_divided_info)', function (obj) {
+                $.ajax({
+                    url: '/game/edit_divided_info',
+                    type: "POST",
+                    dataType: "JSON",
+                    data: obj.field,
+                    success: function (resp) {
+                        if (resp.code == 200) {
+                            layer.msg('编辑研发分成信息成功', {icon: 1, time: 1000}, function () {
+                                location.href = '/game/index';
+                            });
+                        } else {
+                            layer.msg(resp.msg, {icon: 5, time: 1000});
+                        }
+                    }
+                })
+            });
+
+
+            // icon上传 开始
+            var icon_callback_img = function (imgurl) {
+                $('input[name="icon"]').val(imgurl);
+                $('#icon_img-badge').attr('src', imgurl).show();
+            };
+
+            var img_upload = new ossUpload();
+            img_upload.init({
+                container_id: 'icon_pictures',
+                browse_button: 'icon_btn_badge',
+                serverUrl: '/oss/get_token',
+                //width: 120,
+                //height: 120,
+                wh_model: 'same',
+                callback: icon_callback_img,
+            });
+            // icon上传 结束
+
+            // 视频上传 开始
+            var video_upload_callback = function (imgurl) {
+                console.log(imgurl);
+                $('input[name="video"]').val(imgurl);
+                // $('input[name="video"]').attr('type', 'text');
+                // $('#icon_img-badge').attr('src', imgurl).show();
+            };
+
+            var video_upload = new ossUpload();
+            video_upload.init({
+                container_id: 'video_upload',
+                browse_button: 'video_upload_btn',
+                serverUrl: '/oss/get_token',
+                max_file_size: '15mb',
+                wh_model: 'lt',
+                mime_types: [{title: "files", extensions: "mp4"}],
+                callback: video_upload_callback,
+            });
+            // 视频上传 结束
+
+            // 多图上传开始
+            var imgs_upload_callback = function (imgurl) {
+                $('#imgs-upload-list').append('<span ><input type="hidden" name="imgs[]" value="' + imgurl + '" >' +
+                    '<img src="' + imgurl + '"  class="layui-upload-img img_del"> <em>删除</em> </span>')
+            };
+
+            var img_upload = new ossUpload();
+            img_upload.init({
+                container_id: 'imgs-upload-list',
+                browse_button: 'imgs-upload_btn',
+                serverUrl: '/oss/get_token',
+                width: 480,
+                height: 800,
+                wh_model: 'eq',
+                is_multi: true,
+                callback: imgs_upload_callback,
+            });
+
+            $('#imgs-upload-list').on('click', 'em', function () {
+                $(this).parent().remove();
+            });
+            // 多图上传结束
+
+
+            //触发事件
+            var active = {
+                cate_layout: function () {
+                    layer.open({
+                        title: '页面层',
+                        type: 1,
+                        shadeClose: true,
+                        area: ['700px', '480px'],
+                        btn: ['确定', '取消'],
+                        content: $("#layuiadmin-form-role"),
+                        yes: function (index, layero) {
+                            var $cate_name = '', $cate_id = '';
+                            $('#layuiadmin-form-role .layui-form-checked').each(function () {
+                                var $checked = $('span', this).text(), $id = $(this).prev().prop('name');
+                                $cate_name += '<span class="layui-btn layui-btn-primary layui-btn-sm">' + $checked + ' <i class="layui-icon" style="color:red;">&#xe640;</i></span>';
+                                $cate_id += $id + ','
+                            })
+                            $('#game_cate_names').html($cate_name);
+                            $('#cate_ids').val($cate_id.substring(0, $cate_id.length - 1))
+                            layer.close(index);
+                        }
+                    });
+                },
+                tags_layout: function () {
+                    layer.open({
+                        title: '页面层',
+                        type: 1,
+                        shadeClose: true,
+                        area: ['700px', '480px'],
+                        btn: ['确定', '取消'],
+                        content: $("#layuiadmin-form-tags"),
+                        yes: function (index, layero) {
+                            var tags_name = '', tags_id = '';
+                            $('#layuiadmin-form-tags .layui-form-checked').each(function () {
+                                var checked = $('span', this).text(), id = $(this).prev().prop('name');
+                                tags_name += '<span class="layui-btn layui-btn-primary layui-btn-sm">' + checked + ' <i class="layui-icon" style="color:red;">&#xe640;</i></span>';
+                                tags_id += id + ','
+                            });
+                            $('#game_tags_names').html(tags_name);
+                            $('#tags_ids').val(tags_id.substring(0, tags_id.length - 1));
+                            layer.close(index);
+                        }
+                    });
+                }
+            };
+
+            /** 选择标签开始 **/
+            var cate_selected = function () {
+                var $cate_ids_val = $('#cate_ids').val().split(',');
+                $('#layuiadmin-form-role .layui-unselect').removeClass('layui-form-checked');
+
+                $.each($cate_ids_val, function (i, val) {  //遍历二维数组
+                    $("#layuiadmin-form-role input[name='" + val + "']").next().addClass('layui-form-checked')
+
+                })
+            };
+            cate_selected();
+            $('#game_cate_names').on('click', '.layui-btn-sm', function () {
+                var $i = $(this).index(), $cate_ids = $('#cate_ids');
+                $(this).remove();
+                var $new_val = $cate_ids.val().split(',');
+                $new_val.splice($i, 1);
+                $cate_ids.val($new_val)
+            });
+            $('#game_cate_btn').on('click', function () {
+                cate_selected()
+            });
+            $('#game_cate_btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+            /** 选择标签结束 **/
+
+            /**  标签选择开始 **/
+            var tags_selected = function () {
+                var tags_ids_val = $('#tags_ids').val().split(',');
+                $('#layuiadmin-form-tags .layui-unselect').removeClass('layui-form-checked');
+
+                $.each(tags_ids_val, function (i, val) {  //遍历二维数组
+                    $("#layuiadmin-form-tags input[name='" + val + "']").next().addClass('layui-form-checked')
+
+                })
+            };
+            tags_selected();
+            $('#game_tags_names').on('click', '.layui-btn-sm', function () {
+                var i = $(this).index(), tags_ids = $('#tags_ids');
+                $(this).remove();
+                var new_val = tags_ids.val().split(',');
+                new_val.splice(i, 1);
+                tags_ids.val(new_val)
+            });
+            $('#game_tags_btn').on('click', function () {
+                tags_selected();
+            });
+            $('#game_tags_btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+
+            /**  标签选择结束 **/
+
+            function batchdel(ids, callback) {
+                $.ajax({
+                    type: "post",
+                    dataType: "json",
+                    url: "/game_cate/delete",
+                    data: {"ids": ids},
+                    success: function (json) {
+                        if (json.code == 200) {
+                            layer.msg('删除成功', {icon: 1, time: 1000}, function () {
+                                if (typeof callback == 'function') {
+                                    callback();
+                                }
+                            });
+                        } else {
+                            layer.alert(json.msg)
+                        }
+                    }
+                })
+            }
+
+            //单个删除
+            $('#game_cate_span').on('click', '.cate_id_span', function () {
+
+                var id = $(this).parent('span').attr('data-id')
+                var span = $(this).closest('span');
+
+                layer.confirm('确定要删除吗？', {btn: ['确定', '取消']}, function () {
+                    span.remove();
+                    layer.closeAll();
+                });
+            });
+
+            //搜索研发商
+            $('#developer_name').on('keydown', function (event) {
+                if (event.keyCode == 8) {
+                    $('input[name="developer_id"]').val('')
+                }
+            });
+            autocomplete.init({
+                elem: "#developer_name",
+                textLength: 2,//触发长度
+                delay: 200,//触发延迟
+                callback: {
+                    data: function (val, render) {
+                        $.ajax({
+                            type: "post",
+                            dataType: "json",
+                            url: "/developer/autocomplete",
+                            data: {name: val},
+                            success: function (json) {
+                                console.log(json);
+                                if (json.code == 200) {
+                                    render(json.data);
+                                } else {
+                                    layer.alert(json.msg);
+                                }
+                            }
+                        });
+                    },
+                    selected: function (data) {
+                        $('input[name="developer_id"]').val(data.value)
+                    },
+                    close: function () {
+                    }
+                }
+            });
+
+            //预览视频
+            $('#preview').click(function () {
+                layer.open({
+                    type: 1
+                    , title: "视频预览"
+                    //,skin: 'layui-layer-rim'
+                    , shadeClose: true
+                    , area: ['600px', '600px']
+                    , content: $('#preview-video')
+                });
+            });
+
+        }
+    );
+
+    //复制
+    var clipboard = new ClipboardJS('.copyAppkeyServer');
+    clipboard.on('success', function (e) {
+        layer.msg('复制成功')
+        console.log(e);
+    });
+    clipboard.on('error', function (e) {
+        console.log(e);
+    });
+
+    var clipboardAppkey = new ClipboardJS('.copyAppkey');
+    clipboardAppkey.on('success', function (e) {
+        layer.msg('复制成功')
+        console.log(e);
+    });
+    clipboardAppkey.on('error', function (e) {
+        console.log(e);
+    });
+</script>
+</body>
+</html>

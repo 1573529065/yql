@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div style="padding-bottom: 10px;">
+                <a class="layui-btn" href="/version/add">添加</a>
+                <button class="layui-btn layui-btn-danger" id="batchdel">删除</button>
+            </div>
+            <table class="layui-table layui-form">
+                <colgroup>
+                    <col width="60">
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col width="100">
+                    <col width="230">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th><input type="checkbox" lay-filter="check-all" lay-skin="primary"></th>
+                    <th>编号</th>
+                    <th>版本号</th>
+                    <th>版本大小</th>
+                    <th>安卓下载地址</th>
+                    <th>iOS下载地址</th>
+                    <th>描述</th>
+                    <th>强制更新</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($list as $item){?>
+                    <tr data-id="<?=$item['id']?>">
+                        <td><input type="checkbox" name="ids" lay-skin="primary" value="<?=$item['id']?>"></td>
+                        <td><?=$item['id']?></td>
+                        <td><?=$item['version']?></td>
+                        <td><?=$item['size']?></td>
+                        <td><?=$item['origin_package_android']?></td>
+                        <td><?=$item['origin_package_ios']?></td>
+                        <td><span class="view-des">[查看]</span><textarea style="display: none;"><?=$item['des'];?></textarea></td>
+                        <td><input type="checkbox" value="1" lay-filter="force_update" name="force_update" <?=($item['force_update'] == 1) ? 'checked' : ''?> lay-skin="switch" lay-text="是|否"></td>
+                        <td><input type="checkbox" value="1" lay-filter="status" name="status" <?=($item['status'] == 1) ? 'checked' : ''?> lay-skin="switch" lay-text="启用|禁用"></td>
+                        <td>
+                            <a class="layui-btn layui-btn-xs" href="/version/edit?id=<?=$item['id']?>&p=<?=$curpage ?>"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+                            <a class="layui-btn layui-btn-danger layui-btn-xs delete"><i class="layui-icon layui-icon-delete"></i>删除</a>
+                            <a class="layui-btn layui-btn-primary layui-btn-xs build">一键分包</a>
+                        </td>
+                    </tr>
+                <?php }?>
+                </tbody>
+            </table>
+            <?=$page?>
+        </div>
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script>
+    layui.use('form', function () {
+        var $ = layui.$
+            , form = layui.form;
+
+        //全选
+        form.on('checkbox(check-all)', function (data) {
+            $('input[name="ids"]').prop("checked", data.elem.checked);
+            form.render('checkbox');
+        });
+
+        //查看详情
+        $('span.view-des').on('click', function () {
+            layer.tips($(this).siblings('textarea').val(), $(this))
+        });
+
+        //强制更新
+        form.on('switch(force_update)', function (data) {
+            console.log(data.elem.checked);
+            var id = $(this).closest('tr').data('id');
+            var status = data.elem.checked ? 1 : 0;
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/version/toggle",
+                data: {id: id, field : 'force_update', val: status},
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('操作成功');
+                    } else {
+                        layer.alert(json.msg);
+                    }
+                }
+            });
+        });
+
+        //启用禁用
+        form.on('switch(status)', function (data) {
+            console.log(data.elem.checked);
+            var id = $(this).closest('tr').data('id');
+            var status = data.elem.checked ? 1 : 0;
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/version/toggle",
+                data: {id: id, field: 'status', val: status},
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('操作成功');
+                    } else {
+                        layer.alert(json.msg);
+                    }
+                }
+            });
+        });
+
+        //批量删除
+        $('#batchdel').on('click', function () {
+            var ids = [];
+            $('input[name="ids"]:checked').each(function () {
+                ids.push($(this).val())
+            })
+            if (ids.length <= 0) {
+                return;
+            }
+            layer.confirm('确定要删除吗？', {btn:['确定', '取消']}, function () {
+                batchdel(ids, function () {
+                    location.href = location.href;
+                });
+            });
+
+        });
+
+        function batchdel(ids, callback) {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/version/delete",
+                data: {"ids": ids},
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('删除成功', {icon: 1, time: 1000}, function () {
+                            if (typeof callback == 'function') {
+                                callback();
+                            }
+                        });
+                    } else {
+                        layer.alert(json.msg)
+                    }
+                }
+            })
+        }
+
+        //单个删除
+        $('.delete').on('click', function () {
+            var ids = [];
+            var tr = $(this).closest('tr');
+            ids.push(tr.data('id'));
+            layer.confirm('确定要删除吗？', {btn:['确定', '取消']}, function () {
+                batchdel(ids, function () {
+                    tr.remove();
+                });
+            });
+        });
+
+        //一键分包
+        $('.build').on('click', function () {
+            layer.load();
+            var tr = $(this).closest('tr');
+            var id = tr.data('id');
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/version/build",
+                data: {"id": id},
+                success: function (json) {
+                    layer.closeAll('loading');
+                    console.log(json)
+                    if (json.code == 200) {
+                        layer.msg('操作成功', {icon: 1, time: 1000}, function () {
+
+                        });
+                    } else {
+                        layer.alert(json.msg);
+                    }
+                },
+                error: function () {
+                    layer.closeAll('loading');
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

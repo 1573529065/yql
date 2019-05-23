@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                        <ul class="layui-tab-title">
+                            <li <?= $tab == 1 ? 'class="layui-this"' : '' ?>>
+                                <a href="/user/user_det?id=<?= $userInfo['id'] ?>&tab=1">基本信息</a>
+                            </li>
+                            <li <?= $tab == 2 ? 'class="layui-this"' : '' ?>>
+                                <a href="/user/user_det?id=<?= $userInfo['id'] ?>&tab=2">登录日志</a>
+                            </li>
+                            <li <?= $tab == 3 ? 'class="layui-this"' : '' ?>>
+                                <a href="/user/user_det?id=<?= $userInfo['id'] ?>&tab=3">邀请详情</a>
+                            </li>
+                            <li>
+                                <a href="/user/index">返 回</a>
+                            </li>
+                            <li style="float: right">
+                                <i>账号： </i><?php echo $userInfo['username'] . "&nbsp&nbsp&nbsp  ( " . $userInfo['id'] . " ) "; ?>
+                            </li>
+
+                        </ul>
+
+                        <div class="layui-tab-content">
+                            <div class="layui-tab-item <?= $tab == 1 ? 'layui-show' : '' ?>">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">会员ID</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" value="<?= $userInfo['id'] ?>" disabled class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">头像</label>
+                                    <div class="layui-input-inline">
+                                        <img src="<?= $userInfo['avatar'] ?>" class="layui-upload-img">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">会员名</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" value="<?= $userInfo['username'] ?>" disabled
+                                               class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">昵称</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" value="<?= $userInfo['nickname'] ?>" disabled
+                                               class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">手机号码</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" value="<?= $userInfo['mobile'] ?>" disabled
+                                               class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">注册时间</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" value="<?= $userInfo['reg_time'] ?>" disabled
+                                               class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">注册IP</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" value="<?= $userInfo['reg_ip'] ?>" disabled
+                                               class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">注册设备</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" value="<?= $userInfo['reg_imei'] ?>" disabled class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">设备使用数</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" value="<?= $imei_num ?>" disabled class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">最后登录设备</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" value="<?= $last_imei ?>" disabled class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">最后登录时间</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" value="<?= $userInfo['login_time'] ?>" disabled
+                                               class="layui-input">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="layui-tab-item <?= $tab == 2 ? 'layui-show' : '' ?>">
+                                <div class="layui-form layui-card-header layui-row">
+                                    <div class="layui-col-xs2">
+                                        <div class="layui-inline">设备使用总数: <?= $imei_num ?></div>
+                                    </div>
+                                </div>
+                                <div class="layui-card-body" style="padding:0px;">
+                                    <table class="layui-table">
+                                        <colgroup>
+                                            <col width="25%">
+                                            <col width="25%">
+                                            <col width="25%">
+                                            <col width="25%">
+                                        </colgroup>
+                                        <thead>
+                                        <tr>
+                                            <th>登录时间</th>
+                                            <th>设备号</th>
+                                            <th>登录IP</th>
+                                            <th>所在地址</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <?php foreach ($list as $item) { ?>
+                                            <tr data-id="<?= $item['id'] ?>">
+                                                <td><?= date("Y-m-d H:i:s", $item['login_time']) ?></td>
+                                                <td><?= $item['imei'] ?></td>
+                                                <td><?= $item['login_ip'] ?></td>
+                                                <td>所在地址</td>
+                                            </tr>
+                                        <?php } ?>
+                                        </tbody>
+                                    </table>
+                                    <?= $page ?>
+                                </div>
+
+                            </div>
+
+                            <div class="layui-tab-item <?= $tab == 3 ? 'layui-show' : '' ?>">
+                                <div class="layui-form" lay-filter="">
+                                    <div class="layui-card-body" style="padding:0px;">
+                                        <div style="padding-bottom: 10px;">
+                                            <button class="layui-btn layui-btn-danger" id="lock_all">一键锁定</button>
+                                            <button class="layui-btn" id="unlock_all">一键解锁</button>
+                                        </div>
+                                        <table class="layui-table">
+                                            <colgroup>
+                                                <col>
+                                                <col>
+                                                <col>
+                                                <col>
+                                                <col>
+                                                <col>
+                                                <col>
+                                                <col>
+                                                <col>
+                                                <col>
+                                                <col>
+                                                <col>
+                                                <col>
+                                                <col>
+                                            </colgroup>
+                                            <thead>
+                                            <tr>
+                                                <th><input type="checkbox" lay-filter="check-all" lay-skin="primary">
+                                                </th>
+                                                <th>会员ID</th>
+                                                <th>会员名</th>
+                                                <th>昵称</th>
+                                                <th>绑定手机</th>
+                                                <th>消费VIP</th>
+                                                <th>活跃VIP</th>
+                                                <th>充值</th>
+                                                <th>余额</th>
+                                                <th>所属渠道</th>
+                                                <th>注册设备</th>
+                                                <th>注册IP</th>
+                                                <th>注册/登录时间</th>
+                                                <th>操作</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <?php foreach ($inviteUserList as $item) { ?>
+                                                <tr data-id="<?= $item['id'] ?>" id="tr-<?= $item['id'] ?>">
+                                                    <td>
+                                                        <input type="checkbox" name="ids" lay-skin="primary"
+                                                               data-id="<?= $item['id'] ?>">
+                                                    </td>
+                                                    <td><?= $item['id'] ?></td>
+                                                    <td><?= $item['username'] ?></td>
+                                                    <td><?= $item['nickname'] ?></td>
+                                                    <td><?= $item['mobile'] ?></td>
+                                                    <td>暂时不用</td>
+                                                    <td>暂时不用</td>
+                                                    <td><?= $item['total_charge'] ?></td>
+                                                    <td><?= $item['balance'] ?></td>
+                                                    <td><?= $item['reg_channel'] ?></td>
+                                                    <td>注册设备</td>
+                                                    <td><?= $item['reg_ip'] ?></td>
+                                                    <td>
+                                                        <?= $item['reg_time'] != 0 ? date('Y-m-d H:i:s', $item['reg_time']) : '' ?>
+                                                        <br>
+                                                        <?= $item['login_time'] != 0 ? date('Y-m-d H:i:s', $item['login_time']) : '' ?>
+                                                    </td>
+                                                    <td>
+                                                        <a class="layui-btn-xs user_status <?= $item['status'] == 1 ? 'lock' : 'unlock' ?> "
+                                                           data-type="remarks_layout">
+                                                            <?php
+                                                            if ($item['status'] == 1) {
+                                                                echo "<span style='color: red'><i>锁定</i></span>";
+                                                            } else if ($item['status'] == 0) {
+                                                                echo "<span style='color: green'><i>解锁</i></span>";
+                                                            }
+                                                            ?>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            <?php } ?>
+                                            </tbody>
+                                        </table>
+                                        <?= $inviteUserPage ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!--锁定用户弹框-->
+<div id="lay-box" style="display: none;">
+    <form class="layui-form" action="" style="padding: 20px;">
+        <div class="layui-form-item layui-form-text">
+            <input type="hidden" name="user_id" class="box_user_id" value="">
+            <label class="layui-form-label">锁定原因</label>
+            <div class="layui-input-block">
+                <textarea name="remarks" placeholder="“锁定原因”  不会以消息的形式发送给该用户，仅供后台查阅" class="layui-textarea remarks"
+                          cols="60" rows="5" style="resize: none;"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">违规截图</label>
+            <div class="layui-input-block" id="container_snapshot">
+                <button type="button" class="layui-btn layui-btn-primary" id="selectfiles_snapshot"><i
+                            class="layui-icon">&#xe67c;</i>上传图片
+                </button>
+            </div>
+        </div>
+        <div style="padding-top: 30px;">
+            <table class="layui-table" lay-filter="table-box">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col width="160">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>操作时间</th>
+                    <th>日志类型</th>
+                    <th>备注</th>
+                    <th>操作人</th>
+                </tr>
+                </thead>
+                <tbody class="banned-log">
+                </tbody>
+            </table>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="text-align: center;margin-left: 0px;margin-top: 20px;">
+                <button class="layui-btn" lay-submit lay-filter="user-banned-lock">锁定用户</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- 解锁用户弹框-->
+<div id="lay-box-unlock" style="display: none;">
+    <form class="layui-form" action="" style="padding: 20px;">
+        <div class="layui-form-item layui-form-text">
+            <input type="hidden" name="user_id" class="box_user_id" value="">
+            <label class="layui-form-label">解锁原因</label>
+            <div class="layui-input-block">
+                <textarea name="remarks" placeholder="“解锁原因”  不会以消息的形式发送给该用户，仅供后台查阅" class="layui-textarea remarks"
+                          cols="60" rows="5" style="resize: none;"></textarea>
+            </div>
+        </div>
+        <div style="padding-top: 30px;">
+            <table class="layui-table" lay-filter="table-box">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col width="160">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>操作时间</th>
+                    <th>日志类型</th>
+                    <th>备注</th>
+                    <th>操作人</th>
+                </tr>
+                </thead>
+                <tbody class="banned-log">
+                </tbody>
+            </table>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="text-align: center;margin-left: 0px;margin-top: 20px;">
+                <button class="layui-btn" lay-submit lay-filter="user-banned-unlock">解锁用户</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--一键解锁 用户弹框-->
+<div id="lay-box-all-unlock" style="display: none;">
+    <form class="layui-form" action="" style="padding: 20px;">
+        <div class="layui-form-item layui-form-text">
+            <input type="hidden" name="user_ids" class="box_user_id" value="">
+            <label class="layui-form-label">解锁原因</label>
+            <div class="layui-input-block">
+                <textarea name="remarks" placeholder="“解锁原因”  不会以消息的形式发送给该用户，仅供后台查阅" class="layui-textarea remarks"
+                          cols="60" rows="5" style="resize: none;"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="text-align: center;margin-left: 0px;margin-top: 20px;">
+                <button class="layui-btn" lay-submit lay-filter="user-banned-unlock-all">解锁用户</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--一键锁定 - 锁定用户弹框-->
+<div id="lay-box-all-lock" style="display: none;">
+    <form class="layui-form" action="" style="padding: 20px;">
+        <div class="layui-form-item layui-form-text">
+            <input type="hidden" name="user_ids" class="box_user_id" value="">
+            <label class="layui-form-label">锁定原因</label>
+            <div class="layui-input-block">
+                <textarea name="remarks" placeholder="“锁定原因”  不会以消息的形式发送给该用户，仅供后台查阅" class="layui-textarea remarks"
+                          cols="60" rows="5" style="resize: none;"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">违规截图</label>
+            <div class="layui-input-block" id="container_snapshot">
+                <button type="button" class="layui-btn layui-btn-primary" id="selectfiles_snapshot_all"><i
+                            class="layui-icon">&#xe67c;</i>上传图片
+                </button>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="text-align: center;margin-left: 0px;margin-top: 20px;">
+                <button class="layui-btn" lay-submit lay-filter="user-banned-lock-all">锁定用户</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script type="text/javascript" src="/common/js/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script type="text/javascript" src="/common/js/oss.upload.lib.js?t=20190402"></script>
+<script>
+    layui.extend({
+        autocomplete: '/layuiadmin/autocomplete/autocomplete'
+    }).use(['form', 'layer', 'element', 'autocomplete'], function () {
+            var $ = layui.$,
+                form = layui.form,
+                layer = layui.layer,
+                element = layui.element,
+                autocomplete = layui.autocomplete;
+
+            element.render();
+
+            // 提交锁定
+            form.on('submit(user-banned-lock)', function (obj) {
+                var data = obj.field;
+                data.type = 2;
+                $.ajax({
+                    url: '/user/user_lock',
+                    type: "POST",
+                    dataType: "JSON",
+                    data: data,
+                    success: function () {
+                        layer.msg('修改成功', {icon: 1, time: 1000}, function () {
+                            window.setTimeout(function () {
+                                layer.closeAll();
+                            }, 100);
+                            $("#tr-" + data.user_id).find('.user_status').removeClass('lock').addClass('unlock').html('<span style="color:green"><i>解锁</i></span>')
+                        });
+                    }
+                });
+                return false;
+            });
+
+            // 提交解锁
+            form.on('submit(user-banned-unlock)', function (obj) {
+                var data = obj.field;
+                data.type = 3;
+                $.ajax({
+                    url: '/user/user_lock',
+                    type: "POST",
+                    dataType: "JSON",
+                    data: data,
+                    success: function () {
+                        layer.msg('修改成功', {icon: 1, time: 1000}, function () {
+                            window.setTimeout(function () {
+                                layer.closeAll();
+                            }, 100);
+                            $("#tr-" + data.user_id).find('.user_status').removeClass('unlock').addClass('lock').html('<span style="color:red"><i>锁定</i></span>')
+                        });
+                    }
+                });
+                return false;
+            });
+
+            /**  一键解锁开始  **/
+
+            // 一键解锁
+            $('#unlock_all').on('click', function (e) {
+                var ids = [];
+                $('input[name="ids"]:checked').each(function () {
+                    ids.push($(this).data('id'))
+                });
+                if (ids.length <= 0) {
+                    layer.msg('请选择内容', {icon: 5, time: 1000})
+                    return;
+                }
+                var str_ids = ids.join(',');
+                $('.box_user_id').val(str_ids);
+                openAllUnLockBox();
+            });
+
+            var openAllUnLockBox = function () {
+                $(".remarks").val('');
+                layer.open({
+                    title: "解锁",
+                    area: ['980px', '300px'],
+                    type: 1,
+                    shadeClose: true,
+                    content: $('#lay-box-all-unlock'),
+                });
+            };
+
+            // 提交一键解锁
+            form.on('submit(user-banned-unlock-all)', function (obj) {
+                var data = obj.field;
+                data.type = 3;
+                $.ajax({
+                    url: '/user/user_lock_all',
+                    type: "POST",
+                    dataType: "JSON",
+                    data: data,
+                    success: function (res) {
+                        if (res.code == 200) {
+                            layer.msg('修改成功', {icon: 1, time: 1000}, function () {
+                                window.setTimeout(function () {
+                                    window.location.reload();
+                                }, 100);
+                            });
+                        } else {
+                            layer.alert(res.msg);
+                        }
+                    }
+                });
+                return false;
+            });
+            /**  一键解锁结束 **/
+
+
+            /**  一键锁定开始  **/
+            // 全选
+            form.on('checkbox(check-all)', function (data) {
+                $('input[name="ids"]').prop("checked", data.elem.checked);
+                form.render('checkbox');
+            });
+
+            // 一键锁定
+            $('#lock_all').on('click', function (e) {
+                var ids = [];
+                $('input[name="ids"]:checked').each(function () {
+                    ids.push($(this).data('id'))
+                });
+                console.log(ids);
+                if (ids.length <= 0) {
+                    layer.msg('请选择内容', {icon: 5, time: 1000})
+                    return;
+                }
+                var str_ids = ids.join(',');
+                console.log(str_ids);
+
+                $('.box_user_id').val(str_ids);
+                openAllLockBox();
+            });
+
+            var openAllLockBox = function () {
+                $(".remarks").val('');
+                $(".images").remove();
+                layer.open({
+                    title: "锁定",
+                    area: ['980px', '350px'],
+                    type: 1,
+                    shadeClose: true,
+                    content: $('#lay-box-all-lock'),
+                });
+            };
+
+            // 一键锁定-上传截图
+            var container_snapshot_all = function (imgurl) {
+                var html = '<span class="images"><input type="hidden" name="snapshot[]" value="' + imgurl + '"><img class="layui-upload-img" id="img-icon" src="' + imgurl + '" /></span>';
+                $('#selectfiles_snapshot_all').before(html);
+            };
+
+            var snapshot_upload_all = new ossUpload();
+            snapshot_upload_all.init({
+                container_id: 'container_snapshot',
+                browse_button: 'selectfiles_snapshot_all',
+                serverUrl: '/oss/get_token',
+                callback: container_snapshot_all,
+            });
+
+            // 提交锁定
+            form.on('submit(user-banned-lock-all)', function (obj) {
+                var data = obj.field;
+                data.type = 2;
+                console.log(data);
+                $.ajax({
+                    url: '/user/user_lock_all',
+                    type: "POST",
+                    dataType: "JSON",
+                    data: data,
+                    success: function (res) {
+                        if (res.code == 200) {
+                            layer.msg('修改成功', {icon: 1, time: 1000}, function () {
+                                window.setTimeout(function () {
+                                    window.location.reload();
+                                }, 100);
+                            });
+                        } else {
+                            layer.alert(res.msg);
+                        }
+                    }
+                });
+                return false;
+            });
+
+
+            /**  一键锁定结束 **/
+
+                // 锁定-上传截图
+            var callback_snapshot = function (imgurl) {
+                    var html = '<span class="images"><input type="hidden" name="snapshot[]" value="' + imgurl + '"><img class="layui-upload-img" id="img-icon" src="' + imgurl + '" /></span>';
+                    $('#selectfiles_snapshot').before(html);
+                };
+
+            var snapshot_upload = new ossUpload();
+            snapshot_upload.init({
+                container_id: 'container_snapshot',
+                browse_button: 'selectfiles_snapshot',
+                serverUrl: '/oss/get_token',
+                callback: callback_snapshot,
+            });
+
+            // 锁定
+            $('tr').on('click', '.lock', function (e) {
+                var id = $(this).closest('tr').data('id');
+                loadBannedLog(id, openLockBox);
+            });
+
+            // 解锁
+            $('tr').on('click', '.unlock', function (e) {
+                var id = $(this).closest('tr').data('id');
+                loadBannedLog(id, openUnlockBox);
+            });
+
+            var loadBannedLog = function (id, callback) {
+                $.ajax({
+                    type: "post",
+                    dataType: "json",
+                    url: "/user_banned/user_log",
+                    data: {id: id},
+                    success: function (json) {
+                        if (json.code == 200) {
+                            var list = json.data.list;
+                            var tr = '';
+                            $.each(list, function (i, e) {
+                                tr += '<tr>' +
+                                    '<td>' + e.addtime + '</td>' +
+                                    '<td>' + e.type + '</td>' +
+                                    '<td>' + e.remarks + '</td>' +
+                                    '<td>' + e.admin_name + '</td>' +
+                                    '</tr>';
+                            });
+                            $('.banned-log').html(tr);
+                            $('.box_user_id').val(id);
+                            callback(id);
+                        } else {
+                            layer.alert(json.msg);
+                        }
+                    }
+                });
+            };
+
+            var openLockBox = function () {
+                $(".remarks").val('');
+                $(".images").remove();
+                layer.open({
+                    title: "锁定",
+                    area: ['980px', '600px'],
+                    type: 1,
+                    shadeClose: true,
+                    content: $('#lay-box'),
+                });
+            };
+
+            var openUnlockBox = function () {
+                $(".remarks").val('');
+                layer.open({
+                    title: "解锁",
+                    area: ['980px', '600px'],
+                    type: 1,
+                    shadeClose: true,
+                    content: $('#lay-box-unlock'),
+                });
+            };
+        }
+    );
+</script>
+</body>
+</html>

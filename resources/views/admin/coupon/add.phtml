@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">添加代金券</div>
+                <div class="layui-card-body" pad15>
+                    <div class="layui-form" lay-filter="">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">适用游戏</label>
+                            <div class="layui-input-block" style="width: 200px">
+                                <textarea class="form-control" name="game_list" lay-verify="required" lay-verType="tips"
+                                          style="height: 100px"></textarea>
+                            </div>
+                            <div class="layui-input-inline" style="width: 190px; left: 130px">
+                                <input type="text" name="game_name" id="game_name" value="" class="layui-input"
+                                       placeholder="请输入游戏名称" autocomplete="off">
+                            </div>
+                            <div class="layui-input-inline" style="left: 130px">
+                                <button class="layui-btn" id="game_add_btn">增加</button>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">（输入游戏名称，多游戏使用英文逗号分割）</div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">抵扣金额</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="value" value="" lay-verify="required" lay-verType="tips"
+                                       class="layui-input" placeholder="请输入金额">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">满减点</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="condition" value="" lay-verify="required" lay-verType="tips"
+                                       class="layui-input" placeholder="请输入满减点">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">有效时间</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="start_time" id="start_time" value="" lay-verify="required" lay-verType="tips"
+                                       placeholder="开始日期" autocomplete="off" class="layui-input">
+                            </div>
+                            <span class="layui-inline">至</span>
+                            <div class="layui-inline">
+                                <input type="text" name="end_time" id="end_time" value="" lay-verify="required" lay-verType="tips"
+                                       placeholder="结束日期" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">设备限制</label>
+                            <div class="layui-input-inline">
+                                <input type="radio" name="device_only" value="1" title="是">
+                                <input type="radio" name="device_only" value="0" title="否">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">（如果设备限制选“是”，表示一个设备只能领取一次代金券）</div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">费用承担</label>
+                            <div class="layui-input-inline" style="width: 210px">
+                                <input type="radio" name="source" value="1" title="可盘官方">
+                                <input type="radio" name="source" value="0" title="游戏方">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">状态</label>
+                            <div class="layui-input-inline">
+                                <input type="radio" name="status" value="1" title="正常">
+                                <input type="radio" name="status" value="0" title="关闭">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <a class="layui-btn layui-btn-primary" href="javascript:void(0);"
+                                   onclick="history.go(-1)">返回</a>
+                                <button class="layui-btn" lay-submit lay-filter="coupon-add">提交</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script>
+    layui.extend({
+        autocomplete: '/layuiadmin/autocomplete/autocomplete'
+    }).use(['form', 'laydate', 'autocomplete'], function () {
+        var $ = layui.$
+            , form = layui.form
+            , laydate = layui.laydate
+            , autocomplete = layui.autocomplete
+            , layer = layui.layer;
+
+        form.on('submit(coupon-add)', function (obj) {
+            $.ajax({
+                url: '/coupon/add',
+                type: "POST",
+                dataType: "JSON",
+                data: obj.field,
+                success: function (resp) {
+                    if (resp.code == 200) {
+                        layer.msg('添加成功', {icon: 1, time: 1000}, function () {
+                            location.href = '/coupon/index';
+                        });
+                    } else {
+                        layer.msg(resp.msg, {icon: 5, time: 1000});
+                    }
+                }
+            })
+        });
+
+        // 增加游戏
+        $('#game_add_btn').on('click', function () {
+            var game_name = $('#game_name').val();
+            var game_list = $('textarea[name="game_list"]').val();
+
+            if (game_list == '') {
+                $('textarea[name="game_list"]').val(game_name); //如果textarea内没有值 那第一条不加逗号
+            } else {
+                $('textarea[name="game_list"]').val(game_list + "," + game_name); //填充数据逗号隔开
+            }
+        });
+
+        //搜索游戏
+        $('#game_name').on('keydown', function (event) {
+            if (event.keyCode == 8) {
+                $('input[name="game_id"]').val('')
+            }
+        });
+        autocomplete.init({
+            elem: "#game_name",
+            textLength: 2,//触发长度
+            delay: 200,//触发延迟
+            callback: {
+                data: function (val, render) {
+                    $.ajax({
+                        type: "post",
+                        dataType: "json",
+                        url: "/game/autocomplete",
+                        data: {name: val},
+                        success: function (json) {
+                            if (json.code == 200) {
+                                render(json.data);
+                            } else {
+                                layer.alert(json.msg);
+                            }
+                        }
+                    });
+                },
+                selected: function (data) {
+                    console.log(data);
+                    $('input[name="game_id"]').val(data.value)
+                },
+                close: function () {
+                }
+            }
+        });
+
+        //开始日期
+        var insStart = laydate.render({
+            elem: '#start_time'
+            , done: function (value, date) {
+                //更新结束日期的最小日期
+                insEnd.config.min = lay.extend({}, date, {
+                    month: date.month - 1
+                });
+                //自动弹出结束日期的选择器
+                insEnd.config.elem[0].focus();
+            }
+        });
+
+        //结束日期
+        var insEnd = laydate.render({
+            elem: '#end_time'
+            , done: function (value, date) {
+                //更新开始日期的最大日期
+                insStart.config.max = lay.extend({}, date, {
+                    month: date.month - 1
+                });
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

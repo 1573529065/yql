@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <div class="layui-form-item">
+                <form method="get">
+                    <div class="layui-col-xs2" style="width: 380px"></div>
+                    <div class="layui-col-xs10 text-right" style="float: right">
+                        <div class="layui-inline" style="width: 120px;">
+                            <input type="hidden" name="admin_id" id="admin_id" value="<?= $admin_id ?? ''; ?>">
+                            <input type="text" name="nickname" id="nickname" value="<?= $nickname ?? ''; ?>"
+                                   class="layui-input" placeholder="操作人" autocomplete="off">
+                        </div>
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <select name="finance_type">
+                                <option value="">财务类型</option>
+                                <option value="1" <?= $finance_type == 1 ? 'selected' : '' ?>>对公</option>
+                                <option value="2" <?= $finance_type == 2 ? 'selected' : '' ?>>对私</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <select name="type">
+                                <option value="">文件类型</option>
+                                <option value="1" <?= $type == 1 ? 'selected' : '' ?>>导入文件</option>
+                                <option value="2" <?= $type == 2 ? 'selected' : '' ?>>导出文件</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <input type="text" name="start_time" id="start_time" value="<?= $start_time ?? '' ?>"
+                                   placeholder="开始日期" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline text-left">
+                            -
+                        </div>
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <input type="text" name="end_time" id="end_time" value="<?= $end_time ?? '' ?>"
+                                   placeholder="结束日期" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layuiadmin-btn-list" type="submit">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+            <table class="layui-table layui-form">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col width="120">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>文件名</th>
+                    <th>财务类型</th>
+                    <th>文件类型</th>
+                    <th>订单金额</th>
+                    <th>记录条数</th>
+                    <th>渠道主数</th>
+                    <th>导出时间</th>
+                    <th>操作人</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($list as $item) { ?>
+                    <tr data-id="<?= $item['id'] ?>">
+                        <td><?= $item['id'] ?></td>
+                        <td><?= $item['name'] ?></td>
+                        <td><?= $item['finance_type'] == 1 ? '对公' : ($item['finance_type'] == 2 ? '对私' : '') ?></td>
+                        <td><?= $item['type'] == 1 ? '导入文件' : ($item['type'] == 2 ? '导出文件' : '') ?></td>
+                        <td><?= $item['total_money'] ?></td>
+                        <td><?= $item['order_num'] ?></td>
+                        <td><?= $item['channel_num'] ?></td>
+                        <td><?= date('Y-m-d H:i:s', $item['addtime']) ?></td>
+                        <td><?= $adminInfos[$item['admin_id']]['nickname'] ?></td>
+                        <td>
+                            <a class="layui-btn layui-btn-xs" href="/channel_order_file/download_file?id=<?= $item['id'] ?>">下载</a>
+<!--                            <a class="layui-btn layui-btn-xs" download="" href="--><?//= $item['url'] ?><!--?response-content-type=application/octet-stream'">下载</a>-->
+                        </td>
+
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+            <?= $page ?>
+        </div>
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script>
+    layui.extend({
+        autocomplete: '/layuiadmin/autocomplete/autocomplete'
+    }).use(['form', 'autocomplete', 'laydate'], function () {
+        var $ = layui.$
+            , form = layui.form
+            , laydate = layui.laydate
+            , autocomplete = layui.autocomplete;
+
+        // 提交解锁
+        form.on('submit(box-edit)', function (obj) {
+            var data = obj.field;
+            $.ajax({
+                url: '/channel/edit',
+                type: "POST",
+                dataType: "JSON",
+                data: data,
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('修改成功', {icon: 1, time: 1000}, function () {
+                            window.setTimeout(function () {
+                                // layer.closeAll();
+                                window.location.reload();
+                            }, 100);
+                        });
+                    } else {
+                        layer.msg(json.msg, {icon: 5, time: 1000}, function () {
+                            window.setTimeout(function () {
+                                layer.closeAll();
+                            }, 100);
+                        });
+                    }
+                }
+            });
+            return false;
+        });
+
+        // 编辑资料
+        $('tr').on('click', '.lay-edit', function (e) {
+            var tr = $(this).closest('tr');
+            var id = tr.data('id');
+
+            $(".box_user_id").val(id);
+            $(".box-username").val(tr.find('td').eq(1).html());
+            $(".box-qq").val($('input[name="qq_' + id + '"]').val());
+            $(".box-wechat").val($('input[name="wechat_' + id + '"]').val());
+            $(".box-remarks").val($('input[name="remarks_' + id + '"]').val());
+
+            layer.open({
+                title: "编辑资料",
+                area: ['980px', '450px'],
+                type: 1,
+                shadeClose: true,
+                content: $('#lay-box-edit'),
+            });
+        });
+
+
+        //搜索后台管理员
+        $('#nickname').on('keydown', function (event) {
+            if (event.keyCode == 8) {
+                $('#admin_id').val('')
+            }
+        });
+        autocomplete.init({
+            elem: "#nickname",
+            textLength: 2,//触发长度
+            delay: 200,//触发延迟
+            callback: {
+                data: function (val, render) {
+                    $.ajax({
+                        type: "post",
+                        dataType: "json",
+                        url: "/admin/autocomplete",
+                        data: {name: val},
+                        success: function (json) {
+                            if (json.code == 200) {
+                                render(json.data);
+                            } else {
+                                layer.alert(json.msg);
+                            }
+                        }
+                    });
+                },
+                selected: function (data) {
+                    console.log(data)
+                    $('#admin_id').val(data.value)
+                },
+                close: function () {
+
+                }
+            }
+        });
+
+        //开始日期
+        var insStart = laydate.render({
+            elem: '#start_time'
+            , done: function (value, date) {
+                //更新结束日期的最小日期
+                insEnd.config.min = lay.extend({}, date, {
+                    month: date.month - 1
+                });
+
+                //自动弹出结束日期的选择器
+                insEnd.config.elem[0].focus();
+            }
+        });
+
+        //结束日期
+        var insEnd = laydate.render({
+            elem: '#end_time'
+            , done: function (value, date) {
+                //更新开始日期的最大日期
+                insStart.config.max = lay.extend({}, date, {
+                    month: date.month - 1
+                });
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

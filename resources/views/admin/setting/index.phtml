@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">全局设置</div>
+                <div class="layui-card-body" pad15>
+
+                    <div class="layui-form">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">标题</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="title" value="<?=$info['title'] ?? '';?>" lay-verify="required" lay-verType="tips"  autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">关键字</label>
+                            <div class="layui-input-block">
+                                <textarea name="keywords" lay-verify="required" lay-verType="tips"  autocomplete="off" class="layui-textarea"><?=$info['keywords'] ?? '';?></textarea>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">描述</label>
+                            <div class="layui-input-block">
+                                <textarea name="des" lay-verify="required" lay-verType="tips"  autocomplete="off" class="layui-textarea"><?=$info['des'] ?? '';?></textarea>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">备案号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="icp" value="<?=$info['icp'] ?? '';?>" lay-verify="required" lay-verType="tips"  autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">安卓广告</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="android_ad_ex_version" value="<?=$info['android_ad_ex_version'] ?? '';?>" lay-verify="required" lay-verType="tips"  autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">大于等于此版本号的不显示广告，如：1.2.0</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">iOS广告</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="ios_ad_ex_version" value="<?=$info['ios_ad_ex_version'] ?? '';?>" lay-verify="required" lay-verType="tips"  autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">安卓完整版</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="android_full_ex_version" value="<?=$info['android_full_ex_version'] ?? '';?>" lay-verify="required" lay-verType="tips"  autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">大于等于此版本号的隐藏部分功能，如：1.2.0</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">iOS完整版</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="ios_full_ex_version" value="<?=$info['ios_full_ex_version'] ?? '';?>" lay-verify="required" lay-verType="tips"  autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">客服QQ</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="service_qq" value="<?=$info['service_qq'] ?? '';?>" lay-verType="tips"  autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">QQ群</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="player_qq" value="<?=$info['player_qq'] ?? '';?>" lay-verType="tips"  autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">IOSQQ群KEY</label>
+                            <div class="layui-input-block">
+<!--                                <input type="text" name="player_qq_key_ios" value="--><?//=$info['player_qq_key_ios'] ?? '';?><!--" lay-verType="tips"  autocomplete="off" class="layui-input">-->
+                                <textarea name="player_qq_key_ios" lay-verify="required" lay-verType="tips"  autocomplete="off" class="layui-textarea"><?=$info['player_qq_key_ios'] ?? '';?></textarea>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">安卓QQ群KEY</label>
+                            <div class="layui-input-block">
+<!--                                <input type="text" name="player_qq_key_android" value="--><?//=$info['player_qq_key_android'] ?? '';?><!--" lay-verType="tips"  autocomplete="off" class="layui-input">-->
+                                <textarea name="player_qq_key_android" lay-verify="required" lay-verType="tips"  autocomplete="off" class="layui-textarea"><?=$info['player_qq_key_android'] ?? '';?></textarea>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <input type="hidden" name="id" value="<?=$info['id'] ?? 0;?>">
+                                <button class="layui-btn" lay-submit lay-filter="setting-save">提交</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script>
+    layui.use('form', function () {
+        var $ = layui.$
+            , form = layui.form
+            , layer = layui.layer;
+
+        //提交表单
+        form.on('submit(setting-save)', function (obj) {
+            $.ajax({
+                url: '/setting/index',
+                type: "POST",
+                dataType: "JSON",
+                data: obj.field,
+                success: function (resp) {
+                    if (resp.code == 200) {
+                        layer.msg('操作成功');
+                    } else {
+                        layer.msg(resp.msg, {icon: 5, time: 1000});
+                    }
+                }
+            });
+        })
+    });
+</script>
+</body>
+</html>

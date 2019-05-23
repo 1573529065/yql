@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <div class="layui-form-item">
+                <form method="get" id="search_form">
+                    <div class="layui-col-xs2" style="width: 380px">
+                        <div class="layui-inline">
+                            <a class="layui-btn" href="#" id="pastAll">一键通过</a>
+                        </div>
+                        <div class="layui-inline">
+                            <a class="layui-btn" href="/channel_order/export?type=2" id="export_id">导出待支付</a>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="button" class="layui-btn" id="test3">导入财务支付表</button>
+<!--                            <a class="layui-btn" href="#" id="import">导入财务支付表</a>-->
+                        </div>
+                    </div>
+                    <div class="layui-col-xs10 text-right" style="width: 75%;">
+                        <div class="layui-inline">
+                            <input type="hidden" name="id" id="order_id" value="<?= $id ?? ''; ?>">
+                            <input type="text" name="order_no" id="order_no" value="<?= $order_no ?? ''; ?>"
+                                   class="layui-input" placeholder="订单号" autocomplete="off">
+                        </div>
+                        <div class="layui-inline">
+                            <input type="hidden" name="channel_id" id="channel_id" value="<?= $channel_id ?? ''; ?>">
+                            <input type="text" name="username" id="username" value="<?= $username ?? ''; ?>"
+                                   class="layui-input" placeholder="渠道账号" autocomplete="off">
+                        </div>
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <select name="status" id="status" lay-filter="search_status">
+                                <option value="">订单状态</option>
+                                <option value="1" <?= $status == 1 ? 'selected' : '' ?>>待审核</option>
+                                <option value="2" <?= $status == 2 ? 'selected' : '' ?>>待支付</option>
+                                <option value="3" <?= $status == 3 ? 'selected' : '' ?>>支付中</option>
+                                <option value="4" <?= $status == 4 ? 'selected' : '' ?>>支付成功</option>
+                                <option value="-1" <?= $status == -1 ? 'selected' : '' ?>>支付失败</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <select name="business_id">
+                                <option value="">选择商务</option>
+                                <?php foreach ($business as $item) {?>
+                                    <option value="<?= $item['id'] ?>" <?= $business_id == $item['id'] ? 'selected' : '' ?>><?= $item['nickname'] ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <select name="type">
+                                <option value="1" <?= $type == 1 ? 'selected' : '' ?>>提现时间</option>
+                                <option value="2" <?= $type == 2 ? 'selected' : '' ?>>操作时间</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <input type="text" name="start_time" id="start_time" value="<?= $start_time ?? '' ?>"
+                                   placeholder="开始日期" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline text-left">
+                            -
+                        </div>
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <input type="text" name="end_time" id="end_time" value="<?= $end_time ?? '' ?>"
+                                   placeholder="结束日期" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layuiadmin-btn-list" type="submit">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="layui-row highlight-block">
+            <div class="layui-col-md12">
+                待审核：<span><?= $moneyArr[1] ?? 0 ?> 元</span>
+                待支付：<span><?= $moneyArr[2] ?? 0 ?> 元</span>
+                支付中：<span><?= $moneyArr[3] ?? 0 ?> 元</span>
+                支付成功：<span><?= $moneyArr[4] ?? 0 ?> 元</span>
+                支付失败：<span><?= $moneyArr[-1] ?? 0 ?> 元</span>
+            </div>
+        </div>
+        <div class="layui-card-body">
+            <table class="layui-table layui-form">
+                <colgroup>
+                    <col width="60">
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col width="160">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th><input type="checkbox" lay-filter="check-all" lay-skin="primary"></th>
+                    <th>订单号</th>
+                    <th>渠道名称</th>
+                    <th>提现金额</th>
+                    <th>收款人</th>
+                    <th>银行账号</th>
+                    <th>银行</th>
+                    <th>支行</th>
+                    <th>省</th>
+                    <th>市</th>
+                    <th>提现时间</th>
+                    <th>最后操作时间</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($list as $item) { ?>
+                    <tr data-id="<?= $item['id'] ?>">
+                        <td><input type="checkbox" name="ids" lay-skin="primary" value="<?= $item['id'] ?>"></td>
+                        <td><?= $item['order_no'] ?></td>
+                        <td><?= $channelInfos[$item['channel_id']]['username'] ?? '' ?></td>
+                        <td><?= $item['amount'] ?></td>
+                        <td><?= $item['payee'] ?></td>
+                        <td><?= $item['bank_account'] ?></td>
+                        <td><?= $item['bank'] ?></td>
+                        <td><?= $item['bank_branches'] ?></td>
+                        <td><?= $regionInfos[$item['bank_province']]['name'] ?></td>
+                        <td><?= $regionInfos[$item['bank_city']]['name'] ?></td>
+                        <td><?= date('Y-m-d H:i:s', $item['addtime']) ?></td>
+                        <td><?= $item['time'] != 0 ? date('Y-m-d H:i:s', $item['time']) : '' ?></td>
+                        <td><?php if ($item['status'] == 1) {
+                                echo '<span style="color: dodgerblue">待审核</span>';
+                            } elseif ($item['status'] == 2) {
+                                echo '<span style="color: dodgerblue">待支付</span>';
+                            } elseif ($item['status'] == 3) {
+                                echo '<span style="color: dodgerblue">支付中</span>';
+                            } elseif ($item['status'] == 4) {
+                                echo '<span style="color: green">支付成功</span>';
+                            } elseif ($item['status'] == -1) {
+                                echo '<span style="color: red">支付失败</span>';
+                            } ?>
+                        </td>
+                        <td>
+                            <?php if ($item['status'] == 1) { ?>
+                            <a class="layui-btn-xs user_status past" data-type="remarks_layout">
+                                <span style='color: green'><i class='iconfont icon-jiesuo'></i><i>通过</i></span>
+                            </a>
+                            <?php } ?>
+                            <?php if (in_array($item['status'], [1, 2, 3])) { ?>
+                                <a class="layui-btn-xs user_status denial" data-type="remarks_layout">
+                                    <span style='color: red'><i class='iconfont icon-suo'></i><i>拒绝</i></span>
+                                </a>
+                            <?php } ?>
+                        </td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+            <?= $page ?>
+        </div>
+    </div>
+</div>
+
+<!-- 拒绝弹框 -->
+<div id="lay-box-message" style="display: none;">
+    <form class="layui-form" action="" style="padding: 20px;">
+        <div class="layui-form-item layui-form-text">
+            <input type="hidden" name="id" class="lay_box_id" value="">
+            <label class="layui-form-label">内容</label>
+            <div class="layui-input-block">
+                <textarea name="remarks" placeholder="请输入拒绝原因" class="layui-textarea remarks" cols="60" rows="5"
+                          style="resize: none;"></textarea>
+            </div>
+            <div class="layui-input-block">
+                <p>注: 此记录会反馈给用户</p>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="text-align: center;margin-left: 0px;margin-top: 20px;">
+                <button class="layui-btn" lay-submit lay-filter="denial_sub">确定</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script type="text/javascript" src="/common/js/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script type="text/javascript" src="/common/js/oss.upload.lib.js?t=20190402"></script>
+<!--<script type="text/javascript" src="/common/js/clipboard.min.js"></script>-->
+<script>
+    layui.extend({
+        autocomplete: '/layuiadmin/autocomplete/autocomplete'
+    }).use(['form', 'layer', 'element', 'autocomplete', 'laydate', 'upload'], function () {
+        var $ = layui.$
+            , form = layui.form,
+            layer = layui.layer,
+            element = layui.element,
+            autocomplete = layui.autocomplete,
+            laydate = layui.laydate,
+            upload = layui.upload;
+
+        element.render();
+
+        /** 自动提交 **/
+        form.on('select(search_status)', function () {
+           $('#search_form').submit();
+        });
+
+
+        /**  导出 **/
+        $('#export_id').on('click', function () {
+            window.location.reload();
+        });
+
+        /** 导入 **/
+        //指定允许上传的文件类型
+        upload.render({
+            elem: '#test3',
+            url: '/channel_order/import?type=2',
+            accept: 'file', //普通文件
+            done: function(res){
+                if (res.code == 200) {
+                    console.log(res);
+                    layer.msg(res.msg, {icon: 1, time: 2000});
+                }else {
+                    console.log(res);
+                }
+            }
+        });
+
+
+        /** 拒绝开始 **/
+        $('tr').on('click', '.denial', function (e) {
+            var id = $(this).closest('tr').data('id');
+            $('.lay_box_id').val(id);
+            $(".remarks").val('');
+            layer.open({
+                title: "请输入拒绝原因",
+                area: ['880px', '300px'],
+                type: 1,
+                shadeClose: true,
+                content: $('#lay-box-message'),
+            });
+        });
+
+        form.on('submit(denial_sub)', function (obj) {
+            var data = obj.field;
+            $.ajax({
+                url: '/channel_order/denial',
+                type: "POST",
+                dataType: "JSON",
+                data: data,
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('操作成功', {icon: 1, time: 1000}, function () {
+                            window.setTimeout(function () {
+                                layer.closeAll();
+                                window.location.reload();
+                            }, 100);
+                        });
+                    } else {
+                        layer.msg(json.msg, {icon: 5, time: 1000}, function () {
+                            window.setTimeout(function () {
+                                layer.closeAll();
+                            }, 100);
+                        });
+                    }
+                }
+            });
+            return false;
+        });
+        /** 拒绝结束 **/
+
+        /** 通过 开始 **/
+        function batPast(ids) {
+            $.ajax({
+                url: '/channel_order/past',
+                type: 'POST',
+                dataType: 'JSON',
+                data: {ids: ids},
+                success: function (res) {
+                    if (res.code == 200) {
+                        layer.msg('修改成功', {icon: 1, time: 1000}, function () {
+                            layer.closeAll();
+                            window.location.reload();
+                        })
+                    } else {
+                        layer.msg(res.msg, {icon: 5})
+                    }
+                }
+            })
+        }
+
+        form.on('checkbox(check-all)', function (data) {
+            $('input[name="ids"]').prop("checked", data.elem.checked);
+            form.render('checkbox');
+        });
+
+        $('.past').on('click', function () {
+            var ids = [];
+            ids.push($(this).closest('tr').data('id'));
+
+            layer.confirm('确定通过吗?', {btn: ['确认', '取消']}, function () {
+                batPast(ids);
+            });
+        });
+
+        $('#pastAll').on('click', function () {
+            if ($('#status').val() != 1) {
+                layer.msg('筛选条件-订单状态不是【待审核】,不可以一键操作');
+                return false;
+            }
+            var ids = [];
+            $('input[name="ids"]:checked').each(function () {
+                ids.push($(this).val())
+            });
+            if (ids.length <= 0) {
+                layer.msg('请选择订单', {icon:5, time:1000});
+                return false;
+            }
+            layer.confirm('确定要全部通过吗？', {btn: ['确定', '取消']}, function () {
+                batPast(ids);
+            });
+        });
+        /** 通过结束 **/
+
+        // 搜索 对私订单号
+        $('#order_no').on('keydown', function (event) {
+            if (event.keyCode == 8) {
+                $('#order_id').val('')
+            }
+        });
+        autocomplete.init({
+            elem: "#order_no",
+            textLength: 2,//触发长度
+            delay: 200,//触发延迟
+            callback: {
+                data: function (val, render) {
+                    $.ajax({
+                        type: "post",
+                        dataType: "json",
+                        url: "/channel_order/autocomplete",
+                        data: {name: val, finance_type: 2},
+                        success: function (json) {
+                            if (json.code == 200) {
+                                render(json.data);
+                            } else {
+                                layer.alert(json.msg);
+                            }
+                        }
+                    });
+                },
+                selected: function (data) {
+                    $('#order_id').val(data.value)
+                },
+                close: function () {}
+            }
+        });
+
+        // 搜索渠道账号
+        $('#username').on('keydown', function (event) {
+            if (event.keyCode == 8) {
+                $('#channel_id').val('')
+            }
+        });
+        autocomplete.init({
+            elem: "#username",
+            textLength: 2,//触发长度
+            delay: 200,//触发延迟
+            callback: {
+                data: function (val, render) {
+                    $.ajax({
+                        type: "post",
+                        dataType: "json",
+                        url: "/channel/autocomplete",
+                        data: {name: val},
+                        success: function (json) {
+                            if (json.code == 200) {
+                                render(json.data);
+                            } else {
+                                layer.alert(json.msg);
+                            }
+                        }
+                    });
+                },
+                selected: function (data) {
+                    $('#channel_id').val(data.value)
+                },
+                close: function () {}
+            }
+        });
+
+        //开始日期
+        var insStart = laydate.render({
+            elem: '#start_time',
+            done: function (value, date) {
+                insEnd.config.min = lay.extend({}, date, { //更新结束日期的最小日期
+                    month: date.month - 1
+                });
+                insEnd.config.elem[0].focus();//自动弹出结束日期的选择器
+            }
+        });
+
+        //结束日期
+        var insEnd = laydate.render({
+            elem: '#end_time',
+            done: function (value, date) {
+                insStart.config.max = lay.extend({}, date, { //更新开始日期的最大日期
+                    month: date.month - 1
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

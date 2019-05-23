@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">编辑发票</div>
+                <div class="layui-card-body" pad15="">
+                    <div class="layui-form" lay-filter="">
+                        <input type="hidden" name="id" value="<?= $info['id'] ?>">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">公司名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="name" value="<?= $info['name'] ?? '' ?>" placeholder="请输入公司名称"
+                                       lay-verify="required" lay-verType="tips" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">发票类型</label>
+                            <div class="layui-input-inline">
+                                <select name="type" lay-verify="">
+                                    <option value="">请选择发票类型</option>
+                                    <option value="1" <?= $info['type'] == 1 ? 'selected' : '' ?>>专用发票</option>
+                                    <option value="2" <?= $info['type'] == 2 ? 'selected' : '' ?>>普通发票</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">发票代码</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="imei" value="<?= $info['imei'] ?? '' ?>" placeholder="请输入发票代码"
+                                       lay-verify="required"
+                                       lay-verType="tips" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">发票号码</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="number" value="<?= $info['number'] ?? '' ?>" placeholder="请输入发票号码"
+                                       lay-verify="required"
+                                       lay-verType="tips" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">发票金额</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="amount" value="<?= $info['amount'] ?? '' ?>" placeholder="请输入发票金额"
+                                       lay-verify="required"
+                                       lay-verType="tips" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">发票日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="time" id="startdate" value="<?= isset($info['time']) ? date('Y-m-d', $info['time']) : '' ?>"
+                                       lay-verify="required" lay-verType="tips"
+                                       placeholder="请选择发票日期" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">发票截图</label>
+                            <div class="layui-input-inline" id="icon_pictures" style="width: 100px">
+                                <input type="hidden" name="img" value="<?= $info['img'] ?? '' ?>">
+                                <img class="layui-upload-img" id="icon_img-badge" src="<?= $info['img'] ?? '' ?>" />
+                            </div>
+                            <div class="layui-input-inline" style="top: 53px;width: 101px;">
+                                <button type="button" class="layui-btn layui-btn-primary"
+                                        id="icon_btn_badge">
+                                    <i class="layui-icon">&#xe67c;</i>上传图片
+                                </button>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">备注</label>
+                            <div class="layui-input-inline" style="width: 600px">
+                                <textarea name="remarks" placeholder="请输入备注"
+                                          class="layui-textarea"><?= $info['remarks'] ?? '' ?></textarea>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">(选填)</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-submit lay-filter="invoice-edit">提交</button>
+                                <a class="layui-btn layui-btn-primary" href="/invoice/index?p=<?= $p ?>">返回</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script type="text/javascript" src="/common/js/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script type="text/javascript" src="/common/js/oss.upload.lib.js?t=20190402"></script>
+<script>
+    layui.use(['form', 'layer', 'laydate'], function () {
+            var $ = layui.$,
+                form = layui.form,
+                layer = layui.layer,
+                laydate = layui.laydate;
+
+            form.on('submit(invoice-edit)', function (obj) {
+                $.ajax({
+                    url: '/invoice/edit',
+                    type: "POST",
+                    dataType: "JSON",
+                    data: obj.field,
+                    success: function (resp) {
+                        if (resp.code == 200) {
+                            layer.msg('编辑成功', {icon: 1, time: 1000}, function () {
+                                location.href = '/invoice/index?p=<?= $p ?>';
+                            });
+                        } else {
+                            layer.msg(resp.msg, {icon: 5, time: 1000});
+                        }
+                    }
+                })
+            });
+
+
+            // icon上传 开始
+            var icon_callback_img = function (imgurl) {
+                $('input[name="img"]').val(imgurl);
+                $('#icon_img-badge').attr('src', imgurl).show();
+            };
+
+            var img_upload = new ossUpload();
+            img_upload.init({
+                container_id: 'icon_pictures',
+                browse_button: 'icon_btn_badge',
+                serverUrl: '/oss/get_token',
+                callback: icon_callback_img,
+            });
+            // icon上传 结束
+
+            //开始日期
+            laydate.render({
+                elem: '#startdate',
+                done: function (value, date) {
+                    //更新结束日期的最小日期
+                    insEnd.config.min = lay.extend({}, date, {
+                        month: date.month - 1
+                    });
+                }
+            });
+        }
+    );
+</script>
+</body>
+</html>

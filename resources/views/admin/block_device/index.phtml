@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+<style>
+    .underLine {
+        text-decoration: underline;
+        text-decoration-color: black;
+    }
+</style>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <div class="layui-form-item">
+                <div class="layui-col-xs2">
+                    <div class="layui-inline"><a class="layui-btn" href="/block_device/add">添加黑名单</a></div>
+                </div>
+                <form method="get">
+                    <div style="float: right">
+                        <input type="hidden" name="id" value="">
+                        <div class="layui-inline">
+                            <input type="hidden" value="<?= $block_id ?>" name="block_id">
+                            <input type="text" value="<?= $block_name ?>" name="block_name" id="imei" placeholder="请输入设备号" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layuiadmin-btn-list" type="submit">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="layui-card-body">
+            <table class="layui-table layui-form" id="table_id">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col width="240">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>设备号</th>
+                    <th>最后备注</th>
+                    <th>状态</th>
+                    <th>最后操作时间</th>
+                    <th>最后操作人</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($list as $item) { ?>
+                    <tr data-id="<?= $item['id'] ?>" data-status="<?= $item['status'] ?>">
+                        <td><?= $item['id'] ?></td>
+                        <td><?= $item['imei'] ?></td>
+                        <td><?= $item['remarks'] ?></td>
+                        <td><?= $item['status'] == 1 ? "<span style='color: red'>封禁中</span>" : "<span style='color: green'>已解封</span>" ?></td>
+                        <td><?= $item['addtime'] > 0 ? date("Y-m-d H:i:s", $item['addtime']) : '' ?></td>
+                        <td><?= $adminInfos[$item['admin_id']]['nickname'] ?? '' ?></td>
+                        <td>
+                            <a class="layui-btn-xs underLine device_status " href="#" data-type="remarks_layout">
+                                <?= $item['status'] == 1 ? "<span style='color: green'>解禁TA</span>" : "<span style='color: red'>再次封禁</span>" ?>
+                            </a>
+                            <a class="layui-btn-xs underLine" href="/block_device/related?imei=<?=$item['imei']?>&p=<?= $p ?>">相关账号</a>
+                            <a class="layui-btn-xs underLine" href="/block_device_log/log_list?block_id=<?=$item['id']?>&p=<?= $p ?>">操作日志</a>
+                        </td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+            <?= $page ?>
+        </div>
+    </div>
+</div>
+
+<!--发消息弹框-->
+<div id="layuiadmin-form-role" style="display: none;">
+    <form class="layui-form" action="" style="padding: 20px;">
+        <div class="layui-form-item layui-form-text">
+            <input type="hidden" id="layout_remarks_id" name="id" value="">
+            <input type="hidden" id="layout_remarks_status" name="status" value="">
+            <p id="layout_remarks_p"></p>
+            <div class="layui-input-block" style="margin: 5px 0px 0px 30px">
+                <textarea name="remarks" id="remarks_textarea" placeholder="请输入..." class="layui-textarea remarks" cols="60" rows="5"
+                          style="resize: none;"></textarea>
+            </div>
+        </div>
+<!--        <div class="layui-form-item">-->
+<!--            <div class="layui-input-block" style="text-align: center;margin-left: 0px;margin-top: 20px;">-->
+<!--                <button class="layui-btn" lay-submit lay-filter="message">确定</button>-->
+<!--            </div>-->
+<!--        </div>-->
+    </form>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script>
+    layui.extend({
+        autocomplete: '/layuiadmin/autocomplete/autocomplete'
+    }).use(['form', 'autocomplete', 'table'], function () {
+        var $ = layui.$,
+            autocomplete = layui.autocomplete,
+            alyer = layui.layer,
+            form = layui.form;
+
+        //触发事件
+        var active = {
+            remarks_layout: function () {
+                layer.open({
+                    title: '信息录入',
+                    type: 1,
+                    shadeClose: true,
+                    area: ['720px', '300px'],
+                    btn: ['确定', '取消'],
+                    content: $("#layuiadmin-form-role"),
+                    yes: function (index, layero) {
+                        var id = $("#layout_remarks_id").val();
+                        var status = $("#layout_remarks_status").val();
+                        var block_status = status == 1 ? 0 : 1;
+                        var type = status == 1 ? 3 : 2;
+                        var remarks = $("#remarks_textarea").val();
+                        $.ajax({
+                            type: "post",
+                            dataType: "json",
+                            url: "/block_device/edit_status",
+                            data: { block_id: id, remarks: remarks, type: type, status: block_status},
+                            success: function (json) {
+                                if (json.code == 200) {
+                                    window.location.reload();
+                                } else {
+                                    layer.alert(json.msg);
+                                }
+                            }
+                        });
+                        layer.close(index);
+                    }
+                });
+            }
+        };
+
+
+        $('.device_status').on('click', function () {
+            var id = $(this).closest('tr').data('id');
+            var status = $(this).closest('tr').data('status');
+
+            $("#layout_remarks_id").val(id);
+            $("#layout_remarks_status").val(status);
+
+            if (status == 1){
+                $("#layout_remarks_p").html("请输入解禁的备注");
+            }else{
+                $("#layout_remarks_p").html("请输入再次封禁的备注");
+            }
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+
+
+        // 搜索设备
+        $('#imei').on('keydown', function (event) {
+            if (event.keyCode == 8) {
+                $('input[name="block_id"]').val('')
+            }
+        });
+        autocomplete.init({
+            elem: "#imei",
+            textLength: 2,//触发长度
+            delay: 200,//触发延迟
+            callback: {
+                data: function (val, render) {
+                    $.ajax({
+                        type: "post",
+                        dataType: "json",
+                        url: "/block_device/autocomplete",
+                        data: {name: val},
+                        success: function (json) {
+                            if (json.code == 200) {
+                                render(json.data);
+                            } else {
+                                layer.alert(json.msg);
+                            }
+                        }
+                    });
+                },
+                selected: function (data) {
+                    console.log(data);
+                    $('input[name="block_id"]').val(data.value)
+                },
+                close: function () {
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+    <style>td {
+            line-height: 24px !important;
+        }</style>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <input type="text" name="title" value="" lay-verify="required" lay-tips="tips" placeholder="角色名"
+                           autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-inline">
+                    <input type="text" name="description" value="" lay-verify="required" lay-tips="tips"
+                           placeholder="描述" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-inline">
+                    <select name="status" lay-verify="required" lay-tips="tips">
+                        <option value="">状态</option>
+                        <option value="1">启用</option>
+                        <option value="0">禁用</option>
+                    </select>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-list" lay-submit lay-filter="group-add">添加</button>
+                    <a class="layui-btn layui-btn-primary" href="javascript:void(0);" onclick="history.go(-1)">返回</a>
+                </div>
+            </div>
+
+            <table class="layui-table layui-form">
+                <colgroup>
+                    <col width="60">
+                    <col width="120">
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th><input type="checkbox" lay-filter="check-all" lay-skin="primary"></th>
+                    <th>主菜单</th>
+                    <th>子菜单</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($menus as $item) { ?>
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="permissions[]" lay-skin="primary" lay-filter="check-top"
+                                   value="<?php echo $item['id']; ?>" <?php if (isset($info['permissions']) && is_array($info['permissions']) && in_array($item['id'], $info['permissions'])) {
+                                echo 'checked="checked"';
+                            } ?> />
+                        </td>
+                        <td><?php echo $item['title']; ?></td>
+                        <td>
+                            <?php if (isset($item['child']) && is_array($item['child'])) {
+                                $html = '';
+                                foreach ($item['child'] as $child) {
+                                    $checked = (isset($info['permissions']) && is_array($info['permissions']) && in_array($child['id'], $info['permissions'])) ? ' checked ' : '';
+                                    $html .= sprintf('<input type="checkbox" name="permissions[]" lay-filter="check-sub" lay-skin="primary" %s value="%s" title="%s" />', $checked, $child['id'], $child['title']);
+                                }
+                                echo $html;
+                            } ?>
+                        </td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script>
+    layui.use(['form', 'laydate'], function () {
+        var $ = layui.$
+            , form = layui.form
+            , layer = layui.layer
+            , laydate = layui.laydate;
+
+        //全选
+        form.on('checkbox(check-all)', function (data) {
+            $('input:checkbox').prop("checked", data.elem.checked);
+            form.render('checkbox');
+        });
+
+        //主菜单选中
+        form.on('checkbox(check-top)', function (data) {
+            $(this).closest('tr').find('input:checkbox').prop('checked', data.elem.checked);
+            form.render('checkbox');
+        });
+
+        //子菜单选中
+        form.on('checkbox(check-sub)', function (data) {
+            if (data.elem.checked == true) {
+                $(this).closest('tr').find('td:eq(0) input:checkbox').prop('checked', true);
+                form.render('checkbox');
+            }
+        });
+
+        //表单提交
+        form.on('submit(group-add)', function (obj) {
+            $.ajax({
+                url: '/group/add',
+                type: "POST",
+                dataType: "JSON",
+                data: obj.field,
+                success: function (resp) {
+                    if (resp.code == 200) {
+                        layer.msg('添加成功', {icon: 1, time: 1000}, function () {
+                            location.href = '/group/index';
+                        });
+                    } else {
+                        layer.msg(resp.msg, {icon: 5, time: 1000});
+                    }
+                }
+            })
+        });
+    });
+</script>
+</body>
+</html>

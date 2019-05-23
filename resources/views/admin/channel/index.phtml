@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <div class="layui-form-item">
+                <form method="get">
+                    <div class="layui-col-xs2">
+                        <div class="layui-inline">
+                            <a class="layui-btn" href="/channel/add">添加渠道</a>
+                        </div>
+                        <div class="layui-inline">
+                            <a class="layui-btn" href="/channel/export_channel">导出渠道</a>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs10 text-right">
+                        <div class="layui-inline">
+                            <input type="hidden" name="channel_id" id="channel_id" value="<?= !empty($channel_id) ? $channel_id : ''; ?>">
+                            <input type="text" name="username" id="username" value="<?= !empty($username) ? $username : ''; ?>"
+                                   class="layui-input" placeholder="渠道账号" autocomplete="off">
+                        </div>
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <select name="type">
+                                <option value="">渠道类型</option>
+                                <option value="1" <?= $type == 1 ? 'selected' : '' ?>>可盘官方</option>
+                                <option value="2" <?= $type == 2 ? 'selected' : '' ?>>第三方</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <select name="settlement_type">
+                                <option value="">结算方式</option>
+                                <option value="1" <?= $settlement_type == 1 ? 'selected' : '' ?>>CPC</option>
+                                <option value="2" <?= $settlement_type == 2 ? 'selected' : '' ?>>CPS</option>
+                                <option value="3" <?= $settlement_type == 3 ? 'selected' : '' ?>>工会</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <select name="finance_type">
+                                <option value="">财务类型</option>
+                                <option value="1" <?= $finance_type == 1 ? 'selected' : '' ?>>对公</option>
+                                <option value="2" <?= $finance_type == 2 ? 'selected' : '' ?>>对私</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <select name="status">
+                                <option value="">状态</option>
+                                <option value="1" <?= $status == 1 ? 'selected' : '' ?>>正常</option>
+                                <option value="0" <?= strlen($status) && $status == 0 ? 'selected' : '' ?>>关闭</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <select name="business_id">
+                                <option value="">所属商务</option>
+                                <?php foreach ($business as $item) {?>
+                                <option value="<?= $item['id'] ?>" <?= $business_id == $item['id'] ? 'selected' : '' ?>><?= $item['nickname'] ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layuiadmin-btn-list" type="submit">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+            <table class="layui-table layui-form">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col width="230">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>渠道ID</th>
+                    <th>渠道账号</th>
+                    <th>渠道类型</th>
+                    <th>结算方式</th>
+                    <th>财务类型</th>
+                    <th>账户余额</th>
+                    <th>提现余额</th>
+                    <th>创建日期</th>
+                    <th>状态</th>
+                    <th>所属商务</th>
+                    <th>修改</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($list as $item) { ?>
+                    <tr data-id="<?= $item['id'] ?>">
+                        <input type="hidden" name="qq_<?= $item['id'] ?>" value="<?= $item['qq'] ?>">
+                        <input type="hidden" name="wechat_<?= $item['id'] ?>" value="<?= $item['wechat'] ?>">
+                        <input type="hidden" name="contact_<?= $item['id'] ?>" value="<?= $item['contact'] ?>">
+                        <input type="hidden" name="remarks_<?= $item['id'] ?>" value="<?= $item['remarks'] ?>">
+                        <td><?= $item['id'] ?></td>
+                        <td><?= $item['username'] ?></td>
+                        <td><?= $item['type'] == 1 ? '可盘官方' : ($item['type'] == 2 ? '第三方' : '') ?></td>
+                        <td><?= $item['settlement_type'] == 1 ? 'CPC' : ($item['settlement_type'] == 2 ? 'CPS' : ($item['settlement_type'] == 3 ? '工会' : '')) ?></td>
+                        <td><?= $item['finance_type'] == 1 ? '对公' : ($item['finance_type'] == 2 ? '对私' : '') ?></td>
+                        <td><?= $item['money'] ?></td>
+                        <td><?= $item['withdraw_money'] ?></td>
+                        <td><?= date('Y-m-d H:i:s', $item['addtime']) ?></td>
+                        <td>
+                            <input type="checkbox" value="1" lay-filter="status"
+                                   name="status" <?= ($item['status'] == 1) ? 'checked' : '' ?> lay-skin="switch"
+                                   lay-text="开启|关闭">
+                        </td>
+                        <td><?= $adminInfos[$item['business_id']]['nickname'] ?? '' ?></td>
+                        <td>
+                            <a class="layui-btn layui-btn-xs lay-edit" href="javascript:void(0)"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+                            <a class="layui-btn layui-btn-xs" href="/channel/info_edit?id=<?= $item['id'] ?>&tab=1&p=<?= $p ?>">高级修改</a>
+                        </td>
+                        <td>
+                            <a class="layui-btn layui-btn-xs" href="/channel/sub_channel?id=<?= $item['id'] ?>&p=<?= $p ?>">子渠道(<?= $item['sub_channel_num'] ?>)</a>
+                            <a class="layui-btn layui-btn-xs build">一键分包</a>
+                        </td>
+
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+            <?= $page ?>
+        </div>
+    </div>
+</div>
+
+<!--编辑弹框-->
+<div id="lay-box-edit" style="display: none;">
+    <form class="layui-form" action="" style="padding: 20px;">
+        <div class="layui-form-item layui-form-text">
+            <input type="hidden" name="id" class="box_user_id" value="">
+            <label class="layui-form-label">渠道账号:</label>
+            <div class="layui-input-inline">
+                <input type="text" name="" disabled value="" class="layui-input box-username">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">联系人:</label>
+            <div class="layui-input-inline">
+                <input type="text" name="contact" value="" class="layui-input box-contact" autocomplete="off" placeholder="请输入联系人姓名">
+            </div>
+            <div class="layui-form-mid layui-word-aux">(选填)</div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">QQ:</label>
+            <div class="layui-input-inline">
+                <input type="text" name="qq" value="" class="layui-input box-qq" placeholder="请输入QQ号">
+            </div>
+            <div class="layui-form-mid layui-word-aux">(选填)</div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">微信:</label>
+            <div class="layui-input-inline">
+                <input type="text" name="wechat" value="" class="layui-input box-wechat" placeholder="请输入微信号">
+            </div>
+            <div class="layui-form-mid layui-word-aux">(选填)</div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-inline" style="width: 600px">
+                <textarea name="remarks" placeholder="请输入备注" class="layui-textarea box-remarks" cols="60" rows="5"
+                          style="resize: none;"></textarea>
+            </div>
+            <div class="layui-form-mid layui-word-aux">(选填)</div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="text-align: center;margin-left: 0px;margin-top: 20px;">
+                <button class="layui-btn" lay-submit lay-filter="box-edit">确定</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script>
+    layui.extend({
+        autocomplete: '/layuiadmin/autocomplete/autocomplete'
+    }).use(['form', 'autocomplete'], function () {
+        var $ = layui.$
+            , form = layui.form
+            , autocomplete = layui.autocomplete;
+
+        // 提交解锁
+        form.on('submit(box-edit)', function (obj) {
+            var data = obj.field;
+            $.ajax({
+                url: '/channel/edit',
+                type: "POST",
+                dataType: "JSON",
+                data: data,
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('修改成功', {icon: 1, time: 1000}, function () {
+                            window.setTimeout(function () {
+                                // layer.closeAll();
+                                window.location.reload();
+                            }, 100);
+                        });
+                    } else {
+                        layer.msg(json.msg, {icon: 5, time: 1000}, function () {
+                            window.setTimeout(function () {
+                                layer.closeAll();
+                            }, 100);
+                        });
+                    }
+                }
+            });
+            return false;
+        });
+
+        //启用禁用
+        form.on('switch(status)', function (data) {
+            var id = $(this).closest('tr').data('id');
+            var val = data.elem.checked ? 1 : 0;
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/channel/toggle",
+                data: {id: id, field: 'status', val: val},
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('操作成功', {icon: 1, time: 1000});
+                    } else {
+                        layer.alert(json.msg);
+                    }
+                }
+            });
+        });
+
+        // 编辑资料
+        $('tr').on('click', '.lay-edit', function (e) {
+            var tr = $(this).closest('tr');
+            var id = tr.data('id');
+
+            $(".box_user_id").val(id);
+            $(".box-username").val(tr.find('td').eq(1).html());
+            $(".box-qq").val($('input[name="qq_' + id + '"]').val());
+            $(".box-wechat").val($('input[name="wechat_' + id + '"]').val());
+            $(".box-contact").val($('input[name="contact_' + id + '"]').val());
+            $(".box-remarks").val($('input[name="remarks_' + id + '"]').val());
+
+            layer.open({
+                title: "编辑资料",
+                area: ['980px', '500px'],
+                type: 1,
+                shadeClose: true,
+                content: $('#lay-box-edit'),
+            });
+        });
+
+
+        //搜索渠道账号
+        $('#username').on('keydown', function (event) {
+            if (event.keyCode == 8) {
+                $('#channel_id').val('')
+            }
+        });
+        autocomplete.init({
+            elem: "#username",
+            textLength: 2,//触发长度
+            delay: 200,//触发延迟
+            callback: {
+                data: function (val, render) {
+                    $.ajax({
+                        type: "post",
+                        dataType: "json",
+                        url: "/channel/autocomplete",
+                        data: {name: val, type: 1},
+                        success: function (json) {
+                            if (json.code == 200) {
+                                render(json.data);
+                            } else {
+                                layer.alert(json.msg);
+                            }
+                        }
+                    });
+                },
+                selected: function (data) {
+                    console.log(data)
+                    $('#channel_id').val(data.value)
+                },
+                close: function () {
+
+                }
+            }
+        });
+
+        //一键分包
+        $('.build').on('click', function () {
+            layer.load();
+            var tr = $(this).closest('tr');
+            var id = tr.data('id');
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/channel/build",
+                data: {"id": id},
+                success: function (json) {
+                    layer.closeAll('loading');
+                    console.log(json)
+                    if (json.code == 200) {
+                        layer.msg('操作成功', {icon: 1, time: 1000}, function () {
+
+                        });
+                    } else {
+                        layer.alert(json.msg);
+                    }
+                },
+                error: function () {
+                    layer.closeAll('loading');
+                }
+            });
+        });
+
+    });
+</script>
+</body>
+</html>

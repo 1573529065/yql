@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <div class="layui-form-item">
+                <form method="get">
+                    <div class="layui-col-xs2">
+                        <div class="layui-inline"><a class="layui-btn" href="/game/add">添加</a></div>
+                    </div>
+                    <div class="layui-col-xs10 text-right">
+                        <div class="layui-inline">
+                            <input type="text" name="id" value="<?= $id != 0 && $id != '' ? $id : ''; ?>" class="layui-input"
+                                   placeholder="游戏id" autocomplete="off">
+                        </div>
+                        <div class="layui-inline">
+                            <input type="text" name="name" id="name" value="<?= $name ?>" class="layui-input"
+                                   placeholder="游戏名称" autocomplete="off">
+                        </div>
+                        <div class="layui-inline">
+                            <input type="hidden" name="developer_id" value="">
+                            <input type="text" name="developer" id="developer" value="<?= $developer ?>" class="layui-input"
+                                   placeholder="研发商" autocomplete="off">
+                        </div>
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <select name="platform">
+                                <option value="">系统</option>
+                                <option value="1" <?= $platform == 1 ? 'selected' : '' ?>>安卓</option>
+                                <option value="2" <?= $platform == 2 ? 'selected' : '' ?>>iOS</option>
+                                <option value="3" <?= $platform == 3 ? 'selected' : '' ?>>H5</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <select name="status">
+                                <option value="">游戏状态</option>
+                                <option value="1" <?= $status == 1 ? 'selected' : '' ?>>开启</option>
+                                <option value="0" <?= strlen(trim($status)) && !$status ? 'selected' : '' ?>>关闭</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layuiadmin-btn-list" type="submit">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+            <table class="layui-table layui-form">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col width="230">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>游戏名称</th>
+                    <th>创建日期</th>
+                    <th>研发商</th>
+                    <th>研发商分成比</th>
+                    <th>渠道费</th>
+                    <th>CPS分成比</th>
+                    <th>充值折扣</th>
+                    <th>热度</th>
+                    <th>状态</th>
+                    <th>分包时间</th>
+                    <th>包名</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($list as $item) { ?>
+                    <tr data-id="<?= $item['id'] ?>">
+                        <input type="hidden" name="id_<?= $item['id'] ?>" value="<?= $item['id'] ?>">
+                        <input type="hidden" name="name_<?= $item['id'] ?>" value="<?= $item['name'] ?>">
+                        <input type="hidden" name="appkey_<?= $item['id'] ?>" value="<?= $item['appkey'] ?>">
+                        <input type="hidden" name="appkey_server_<?= $item['id'] ?>" value="<?= $item['appkey_server'] ?>">
+                        <input type="hidden" name="origin_package_name_<?= $item['id'] ?>" value="<?= $item['origin_package_name'] ?>">
+                        <td><?= $item['id'] ?></td>
+                        <td><?= $item['name'] ?></td>
+                        <td><?= $item['addtime'] != 0 ? date('Y-m-d', $item['addtime']) : '' ?></td>
+                        <td><?= $developers[$item['developer_id']]['name'] ?? '' ?></td>
+                        <td><?= $item['developer_fee_rate'] ?></td>
+                        <td><?= $item['channel_fee_rate'] ?></td>
+                        <td><?= $item['cps_rate'] ?></td>
+                        <td><?= $item['discount'] ?></td>
+                        <td>
+                            <input type="text" name="sort" value="<?= $item['sort'] ?>" data-val="<?= $item['sort'] ?>"
+                                   class="table-text sort" style="width: 50px">
+                        </td>
+                        <td>
+                            <input type="checkbox" value="1" lay-filter="status" name="status" <?= ($item['status'] == 1) ? 'checked' : '' ?> lay-skin="switch" lay-text="开启|关闭">
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <a class="layui-btn layui-btn-xs" href="/game/edit?id=<?= $item['id'] ?>&tab=1&p=<?= $curpage ?>">
+                                <i class="layui-icon layui-icon-edit"></i>编辑
+                            </a>
+                            <a class="layui-btn layui-btn-xs layui-btn-primary build">一键分包</a>
+                            <a class="layui-btn layui-btn-xs layui-btn-primary copy">一键复制</a>
+                        </td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+            <?= $page ?>
+        </div>
+    </div>
+</div>
+
+<div id="lay-box-copy" style="display: none">
+    <div style="padding: 30px;">
+        <div class="layui-form-item">
+            <div class="layui-input-inline">
+                <textarea name="" readonly id="box-textarea" cols="81" rows="10"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="text-align: center;margin-left: 0px;margin-top: 20px;">
+                <button class="layui-btn copy-textarea" data-clipboard-target="#box-textarea">一键复制</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script type="text/javascript" src="/common/js/clipboard.min.js"></script>
+<script>
+    layui.extend({
+        autocomplete: '/layuiadmin/autocomplete/autocomplete'
+    }).use(['form', 'autocomplete'], function () {
+        var $ = layui.$
+            , form = layui.form
+            , autocomplete = layui.autocomplete;
+
+        $('.copy').on('click', function () {
+            var id = $(this).closest('tr').data('id');
+            var str = $('input[name="name_' + id + '"]').val() + "\n";
+                str += 'APPID：' + $('input[name="id_' + id + '"]').val() + "\n";
+                str += 'APPKEY：' + $('input[name="appkey_' + id + '"]').val() + "\n";
+                str += 'APPKEY-SERVER：' + $('input[name="appkey_server_' + id + '"]').val() + '(服务端)' + "\n" ;
+                str += '包名：' + $('input[name="origin_package_name_' + id + '"]').val() + "\n";
+            $("#box-textarea").html(str);
+
+            layer.open({
+                title: '一键复制',
+                type: 1,
+                shadeClose: true,
+                area: ['650px', '350px'],
+                // btn: ['确定', '取消'],
+                content: $('#lay-box-copy'),
+            })
+        });
+        //复制
+        var clipboard = new ClipboardJS('.copy-textarea');
+        clipboard.on('success', function (e) {
+            layer.msg('复制成功');
+            console.log(e);
+        });
+        clipboard.on('error', function (e) {
+            console.log(e);
+        });
+
+        // 排序
+        $('.sort').on('blur', function () {
+            var id = $(this).closest('tr').data('id');
+            var oldval = parseInt($(this).data('val'));
+            var sort = parseInt($(this).val());
+            if (sort >= 0 && oldval != sort) {
+                $.ajax({
+                    type: "post",
+                    dataType: "json",
+                    url: "/game/toggle",
+                    data: {id: id, field: 'sort', val: sort},
+                    success: function (json) {
+                        if (json.code == 200) {
+                            $("input[name='sort']").data('val', sort);
+                            layer.msg('操作成功', {icon: 1, time: 1000});
+                        } else {
+                            layer.alert(json.msg);
+                        }
+                    }
+                });
+            }
+        });
+
+        //搜索游戏
+        $('#name').on('keydown', function (event) {
+            if (event.keyCode == 8) {
+                $('input[name="id"]').val('')
+            }
+        });
+        autocomplete.init({
+            elem: "#name",
+            textLength: 2,//触发长度
+            delay: 200,//触发延迟
+            callback: {
+                data: function (val, render) {
+                    $.ajax({
+                        type: "post",
+                        dataType: "json",
+                        url: "/game/autocomplete",
+                        data: {name: val},
+                        success: function (json) {
+                            if (json.code == 200) {
+                                render(json.data);
+                            } else {
+                                layer.alert(json.msg);
+                            }
+                        }
+                    });
+                },
+                selected: function (data) {
+                    console.log(data)
+                    $('input[name="id"]').val(data.value)
+                },
+                close: function () {
+                }
+            }
+        });
+
+        //搜索研发商
+        $('#developer').on('keydown', function (event) {
+            if (event.keyCode == 8) {
+                $('input[name="developer_id"]').val('')
+            }
+        });
+        autocomplete.init({
+            elem: "#developer",
+            textLength: 2,//触发长度
+            delay: 200,//触发延迟
+            callback: {
+                data: function (val, render) {
+                    $.ajax({
+                        type: "post",
+                        dataType: "json",
+                        url: "/developer/autocomplete",
+                        data: {name: val},
+                        success: function (json) {
+                            if (json.code == 200) {
+                                render(json.data);
+                            } else {
+                                layer.alert(json.msg);
+                            }
+                        }
+                    });
+                },
+                selected: function (data) {
+                    console.log(data)
+                    $('input[name="developer_id"]').val(data.value)
+                },
+                close: function () {
+
+                }
+            }
+        });
+
+        //全选
+        form.on('checkbox(check-all)', function (data) {
+            $('input[name="ids"]').prop("checked", data.elem.checked);
+            form.render('checkbox');
+        });
+
+
+        //启用禁用
+        form.on('switch(status)', function (data) {
+            var id = $(this).closest('tr').data('id');
+            var val = data.elem.checked ? 1 : 0;
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/game/toggle",
+                data: {id: id, field: 'status', val: val},
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('操作成功', {icon: 1, time: 1000});
+                    } else {
+                        layer.alert(json.msg);
+                    }
+                }
+            });
+        });
+
+        //一键分包
+        $('.build').on('click', function () {
+            layer.load();
+            var tr = $(this).closest('tr');
+            var id = tr.data('id');
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/game/build",
+                data: {"id": id},
+                success: function (json) {
+                    layer.closeAll('loading');
+                    console.log(json)
+                    if (json.code == 200) {
+                        layer.msg('操作成功', {icon: 1, time: 1000});
+                    } else {
+                        layer.alert(json.msg);
+                    }
+                },
+                error: function () {
+                    layer.closeAll('loading');
+                }
+            });
+        });
+
+    });
+</script>
+</body>
+</html>

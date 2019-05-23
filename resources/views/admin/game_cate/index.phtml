@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <div class="layui-form-item">
+                <form method="get">
+                    <div class="layui-col-xs2">
+                        <div class="layui-inline"><a class="layui-btn" href="/game_cate/add">添加</a></div>
+                    </div>
+                    <div style="float: right">
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <select name="topic_id">
+                                <option value="">所属主题</option>
+                                <?php foreach ($topics as $key => $val) { ?>
+                                    <option value="<?= $val['id'] ?>" <?= $key == $topic_id ? 'selected' : ''; ?>><?= $val['name'] ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <select name="is_recommend">
+                                <option value="">是否推荐</option>
+                                <option value="1" <?= $is_recommend == 1 ? 'selected' : ''; ?>>是</option>
+                                <option value="0" <?= strlen($is_recommend) && $is_recommend == 0 ? 'selected' : ''; ?>>
+                                    否
+                                </option>
+                            </select>
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layuiadmin-btn-list" type="submit">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+            <table class="layui-table layui-form">
+                <colgroup>
+                    <col width="80">
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col width="100">
+                    <col width="100">
+                    <col width="150">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>分类ID</th>
+                    <th>主题名称</th>
+                    <th>所属主题</th>
+                    <th>主题下排序</th>
+                    <th>推荐排序</th>
+                    <th>显示状态</th>
+                    <th>是否推荐</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($list as $item) { ?>
+                    <tr data-id="<?= $item['id'] ?>">
+                        <td><?= $item['id'] ?></td>
+                        <td><?= $item['name'] ?></td>
+                        <td><?= $topics[$item['topic_id']]['name'] ?? '' ?></td>
+                        <td><input type="text" name="sort" class="table-text sort" data-val="<?= $item['sort']; ?>"
+                                   value="<?= $item['sort']; ?>"></td>
+                        <td><input type="text" name="recommend_sort" class="table-text recommend_sort"
+                                   data-val="<?= $item['recommend_sort']; ?>" value="<?= $item['recommend_sort']; ?>">
+                        </td>
+                        <td><input type="checkbox" value="1" lay-filter="status"
+                                   name="status" <?= ($item['status'] == 1) ? 'checked' : '' ?> lay-skin="switch"
+                                   lay-text="显示|隐藏"></td>
+                        <td><input type="checkbox" value="1" lay-filter="is_recommend"
+                                   name="is_recommend" <?= ($item['is_recommend'] == 1) ? 'checked' : '' ?>
+                                   lay-skin="switch" lay-text="是|否"></td>
+                        <td>
+                            <a class="layui-btn layui-btn-xs" href="/game_cate/edit?id=<?= $item['id'] ?>&p=<?= $p ?>"><i
+                                        class="layui-icon layui-icon-edit"></i>编辑</a>
+                            <a class="layui-btn layui-btn-danger layui-btn-xs delete"><i
+                                        class="layui-icon layui-icon-delete"></i>删除</a>
+                        </td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+            <?= $page ?>
+        </div>
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script>
+    layui.use('form', function () {
+        var $ = layui.$
+            , form = layui.form;
+
+        var updateAttr = function (data, callback) {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/game_cate/toggle",
+                data: data,
+                success: function (json) {
+                    if (json.code == 200) {
+                        callback();
+                    } else {
+                        layer.alert(json.msg);
+                    }
+                }
+            });
+        };
+
+        //是否推荐
+        form.on('switch(is_recommend)', function (data) {
+            console.log(data.elem.checked);
+            var id = $(this).closest('tr').data('id');
+            var status = data.elem.checked ? 1 : 0;
+            updateAttr({'id': id, 'field': 'is_recommend', 'val': status}, function () {
+                layer.msg('操作成功', {icon: 1, time: 1000});
+            });
+        });
+
+        //启用禁用
+        form.on('switch(status)', function (data) {
+            console.log(data.elem.checked);
+            var id = $(this).closest('tr').data('id');
+            var status = data.elem.checked ? 1 : 0;
+            updateAttr({'id': id, 'field': 'status', 'val': status}, function () {
+                layer.msg('操作成功', {icon: 1, time: 1000});
+            });
+        });
+
+        //分类排序
+        $('.sort').on('blur', function () {
+            var id = $(this).closest('tr').data('id');
+            var oldval = parseInt($(this).data('val'));
+            var sort = parseInt($(this).val());
+            var self = $(this);
+            if (sort >= 0 && oldval != sort) {
+                updateAttr({'id': id, 'field': 'sort', 'val': sort}, function () {
+                    $("input[name='sort']").data('val', sort);
+                    layer.msg('操作成功', {icon: 1, time: 1000});
+                });
+            }
+        });
+
+        //推荐排序
+        $('.recommend_sort').on('blur', function () {
+            var id = $(this).closest('tr').data('id');
+            var oldval = parseInt($(this).data('val'));
+            var sort = parseInt($(this).val());
+            var self = $(this);
+            if (sort >= 0 && oldval != sort) {
+                updateAttr({'id': id, 'field': 'recommend_sort', 'val': sort}, function () {
+                    $("input[name='recommend_sort']").data('val', sort);
+                    layer.msg('操作成功', {icon: 1, time: 1000});
+                });
+            }
+        });
+
+        function batchdel(ids, callback) {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/game_cate/delete",
+                data: {"ids": ids},
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('删除成功', {icon: 1, time: 1000}, function () {
+                            if (typeof callback == 'function') {
+                                callback();
+                            }
+                        });
+                    } else {
+                        layer.alert(json.msg)
+                    }
+                }
+            })
+        }
+
+        //单个删除
+        $('.delete').on('click', function () {
+            var ids = [];
+            var tr = $(this).closest('tr');
+            ids.push(tr.data('id'));
+            layer.confirm('确定要删除吗？', {btn: ['确定', '取消']}, function () {
+                batchdel(ids, function () {
+                    tr.remove();
+                });
+            });
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <input type="text" name="keywords" value="" placeholder="输入热搜词" autocomplete="off"
+                           class="layui-input">
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn" lay-submit lay-filter="hot-search-add">添加</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+            <table class="layui-table layui-form">
+                <colgroup>
+                    <col width="80">
+                    <col>
+                    <col>
+                    <col>
+                    <col width="120">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>热搜词</th>
+                    <th>排序</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($list as $item) { ?>
+                    <tr data-id="<?= $item['id'] ?>">
+                        <td><?= $item['id'] ?></td>
+                        <td>
+                            <input type="text" name="keywords" class="table-text keywords"
+                                   data-val="<?= $item['keywords']; ?>" value="<?= $item['keywords']; ?>">
+                        </td>
+                        <td>
+                            <input type="text" name="sort" class="table-text sort" data-val="<?= $item['sort']; ?>"
+                                   value="<?= $item['sort']; ?>">
+                        </td>
+                        <td>
+                            <input type="checkbox" value="1" lay-filter="status"
+                                   name="status" <?= ($item['status'] == 1) ? 'checked' : '' ?>
+                                   lay-skin="switch" lay-text="启用|禁用">
+                        </td>
+                        <td>
+                            <a class="layui-btn layui-btn-xs layui-btn-danger delete">
+                                <i class="layui-icon layui-icon-delete"></i>删除
+                            </a>
+                        </td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+            <?= $page ?>
+        </div>
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script>
+    layui.use('form', function () {
+        var $ = layui.$
+            , form = layui.form;
+
+        //添加
+        form.on('submit(hot-search-add)', function (obj) {
+            $.ajax({
+                url: '/hot_search/add',
+                type: "POST",
+                dataType: "JSON",
+                data: obj.field,
+                success: function (resp) {
+                    if (resp.code == 200) {
+                        layer.msg('添加成功', {icon: 1, time: 1000}, function () {
+                            location.href = location.href;
+                        });
+                    } else {
+                        layer.msg(resp.msg, {icon: 5, time: 1000});
+                    }
+                }
+            })
+        });
+
+
+        //启用禁用
+        form.on('switch(status)', function (data) {
+            console.log(data.elem.checked);
+            var id = $(this).closest('tr').data('id');
+            var status = data.elem.checked ? 1 : 0;
+            updateAttr({id: id, field: "status", val: status}, function () {
+                layer.msg('操作成功');
+            })
+        });
+
+        //排序
+        $('.sort').on('blur', function () {
+            var id = $(this).closest('tr').data('id');
+            var oldval = parseInt($(this).data('val'));
+            var sort = parseInt($(this).val());
+            var self = $(this);
+            if (sort >= 0 && oldval != sort) {
+                updateAttr({'id': id, 'field': 'sort', 'val': sort}, function () {
+                    $("input[name='sort']").data('val', sort);
+                    layer.msg('操作成功', {icon: 1, time: 1000});
+                });
+            }
+        });
+
+        //修改关键字
+        $('.keywords').on('blur', function () {
+            var id = $(this).closest('tr').data('id');
+            var oldval = $(this).data('val');
+            var val = $(this).val();
+            var self = $(this);
+            if (oldval != val) {
+                updateAttr({'id': id, 'field': 'keywords', 'val': val}, function () {
+                    $("input[name='keywords']").data('val', val);
+                    layer.msg('操作成功', {icon: 1, time: 1000});
+                });
+            }
+        });
+
+        var updateAttr = function (data, callback) {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/hot_search/update_attr",
+                data: data,
+                success: function (json) {
+                    if (json.code == 200) {
+                        callback();
+                    } else {
+                        layer.alert(json.msg);
+                    }
+                }
+            });
+        };
+
+        //单个删除
+        $('.delete').on('click', function () {
+            var ids = [];
+            var tr = $(this).closest('tr');
+            ids.push(tr.data('id'));
+            layer.confirm('确定要删除吗？', {btn: ['确定', '取消']}, function () {
+                batchdel(ids, function () {
+                    tr.remove();
+                });
+            });
+        });
+
+        function batchdel(ids, callback) {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/hot_search/delete",
+                data: {"ids": ids},
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('删除成功', {icon: 1, time: 1000}, function () {
+                            if (typeof callback == 'function') {
+                                callback();
+                            }
+                        });
+                    } else {
+                        layer.alert(json.msg)
+                    }
+                }
+            })
+        }
+
+    });
+</script>
+</body>
+</html>

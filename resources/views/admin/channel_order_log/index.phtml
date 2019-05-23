@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <div class="layui-form-item">
+                <form method="get">
+                    <div class="layui-col-xs2">
+
+                    </div>
+                    <div class="layui-col-xs10 text-right" style="float: right">
+                        <div class="layui-inline">
+                            <input type="text" name="order_no" id="order_no" value="<?= $order_no ?? ''; ?>"
+                                   class="layui-input" placeholder="订单号" autocomplete="off">
+                        </div>
+                        <div class="layui-inline">
+                            <input type="hidden" name="admin_id" id="admin_id" value="<?= $admin_id ?? ''; ?>">
+                            <input type="text" name="nickname" id="nickname" value="<?= $nickname ?? ''; ?>"
+                                   class="layui-input" placeholder="操作人" autocomplete="off">
+                        </div>
+                        <div class="layui-inline text-left" style="width: 140px;">
+                            <select name="finance_type">
+                                <option value="">订单财务类型</option>
+                                <option value="1" <?= $finance_type == 1 ? 'selected' : '' ?>>对公</option>
+                                <option value="2" <?= $finance_type == 2 ? 'selected' : '' ?>>对私</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline text-left" style="width: 140px;">
+                            <select name="log_type">
+                                <option value="">选择日志类型</option>
+                                <option value="1" <?= $log_type == 1 ? 'selected' : '' ?>>指定生成</option>
+                                <option value="2" <?= $log_type == 2 ? 'selected' : '' ?>>审核通过</option>
+                                <option value="3" <?= $log_type == 3 ? 'selected' : '' ?>>导出订单</option>
+                                <option value="4" <?= $log_type == 4 ? 'selected' : '' ?>>导入订单</option>
+                                <option value="5" <?= $log_type == 5 ? 'selected' : '' ?>>拒绝订单</option>
+                                <option value="6" <?= $log_type == 6 ? 'selected' : '' ?>>选择发票</option>
+                                <option value="7" <?= $log_type == 7 ? 'selected' : '' ?>>编辑发票</option>
+                                <option value="8" <?= $log_type == 8 ? 'selected' : '' ?>>删除发票</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layuiadmin-btn-list" type="submit">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+            <table class="layui-table layui-form">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col width="230">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>订单号</th>
+                    <th>订单类型</th>
+                    <th>日志类型</th>
+                    <th>操作人</th>
+                    <th>操作时间</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($list as $item) { ?>
+                    <tr data-id="<?= $item['id'] ?>">
+                        <td><?= $item['id'] ?></td>
+                        <td><?= $item['order_no'] ?></td>
+                        <td><?= $item['finance_type'] == 1 ? '对公' : ($item['finance_type'] == 2 ? '<span style="color: blue;">对私</span>' : '') ?></td>
+                        <td>
+                            <?php if ($item['log_type'] == 1) {
+                                echo '指定生成';
+                            } elseif ($item['log_type'] == 2) {
+                                echo '审核通过';
+                            } elseif ($item['log_type'] == 3) {
+                                echo '导出订单';
+                            } elseif ($item['log_type'] == 4) {
+                                echo '导入订单';
+                            } elseif ($item['log_type'] == 5) {
+                                echo '拒绝订单';
+                            } elseif ($item['log_type'] == 6) {
+                                echo '选择发票';
+                            } elseif ($item['log_type'] == 7) {
+                                echo '编辑发票';
+                            } elseif ($item['log_type'] == 8) {
+                                echo '删除发票';
+                            } ?>
+                        </td>
+                        <td><?= $adminInfos[$item['admin_id']]['nickname'] ?? '' ?></td>
+                        <td><?= date('Y-m-d H:i:s', $item['addtime']) ?></td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+            <?= $page ?>
+        </div>
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script>
+    layui.extend({
+        autocomplete: '/layuiadmin/autocomplete/autocomplete'
+    }).use(['form', 'autocomplete'], function () {
+        var $ = layui.$
+            , form = layui.form
+            , autocomplete = layui.autocomplete;
+
+        //搜索后台管理员
+        $('#nickname').on('keydown', function (event) {
+            if (event.keyCode == 8) {
+                $('#admin_id').val('')
+            }
+        });
+        autocomplete.init({
+            elem: "#nickname",
+            textLength: 2,//触发长度
+            delay: 200,//触发延迟
+            callback: {
+                data: function (val, render) {
+                    $.ajax({
+                        type: "post",
+                        dataType: "json",
+                        url: "/admin/autocomplete",
+                        data: {name: val},
+                        success: function (json) {
+                            if (json.code == 200) {
+                                render(json.data);
+                            } else {
+                                layer.alert(json.msg);
+                            }
+                        }
+                    });
+                },
+                selected: function (data) {
+                    console.log(data)
+                    $('#admin_id').val(data.value)
+                },
+                close: function () {
+
+                }
+            }
+        });
+
+        //搜索订单号
+        autocomplete.init({
+            elem: "#order_no",
+            textLength: 2,//触发长度
+            delay: 200,//触发延迟
+            callback: {
+                data: function (val, render) {
+                    $.ajax({
+                        type: "post",
+                        dataType: "json",
+                        url: "/channel_order/autocomplete",
+                        data: {name: val},
+                        success: function (json) {
+                            if (json.code == 200) {
+                                render(json.data);
+                            } else {
+                                layer.alert(json.msg);
+                            }
+                        }
+                    });
+                },
+                selected: function (data) {
+                    $('#order_no').val(data.value)
+                },
+                close: function () {
+
+                }
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">修改活跃VIP</div>
+                <div class="layui-card-body" pad15>
+
+                    <div class="layui-form" lay-filter="">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">VIP标识</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="name" value="<?= $info['name'] ?>" lay-verify="required"
+                                       lay-verType="tips" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">VIP名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="alias" value="<?= $info['alias'] ?>" lay-verify="required"
+                                       lay-verType="tips" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">勋章图标</label>
+                            <div class="layui-input-block" id="container_badge">
+                                <input type="hidden" name="badge" value="<?= $info['badge'] ?>">
+                                <img src="<?= $info['badge'] ?>" class="layui-upload-img" id="img-badge"/>
+                                <button type="button" class="layui-btn layui-btn-primary" id="selectfiles_badge"><i
+                                            class="layui-icon">&#xe67c;</i>上传图片
+                                </button>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">展示图标</label>
+                            <div class="layui-input-block" id="container_icon">
+                                <input type="hidden" name="icon" value="<?= $info['icon'] ?>">
+                                <img src="<?= $info['icon'] ?>" class="layui-upload-img" id="img-icon"/>
+                                <button type="button" class="layui-btn layui-btn-primary" id="selectfiles_icon"><i
+                                            class="layui-icon">&#xe67c;</i>上传图片
+                                </button>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">所需经验</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="exp" value="<?= $info['exp'] ?>" lay-verify="required"
+                                       lay-verType="tips" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <input type="hidden" name="id" value="<?= $info['id'] ?>">
+                                <button class="layui-btn" lay-submit lay-filter="active-vip-edit">提交</button>
+                                <a class="layui-btn layui-btn-primary" href="/active_vip/index/p=<?= $p ?>">返回</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script type="text/javascript" src="/common/js/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script type="text/javascript" src="/common/js/oss.upload.lib.js?t=20190402"></script>
+<script src="/layuiadmin/common.js"></script>
+<script>
+    layui.use('form', function () {
+        var $ = layui.$
+            , form = layui.form
+            , layer = layui.layer;
+
+        /*form.verify({
+            nickname: [/^[\S]{2,16}$/, '昵称最少2个字符'],
+        })*/
+
+        form.on('submit(active-vip-edit)', function (obj) {
+            $.ajax({
+                url: '/active_vip/edit',
+                type: "POST",
+                dataType: "JSON",
+                data: obj.field,
+                success: function (resp) {
+                    if (resp.code == 200) {
+                        layer.msg('修改成功', {icon: 1, time: 1000}, function () {
+                            location.href = '/active_vip/index';
+                        });
+                    } else {
+                        layer.msg(resp.msg, {icon: 5, time: 1000});
+                    }
+                }
+            })
+        });
+
+        //勋章图标
+        var callback_badge = function (imgurl) {
+            $('input[name="badge"]').val(imgurl);
+            $('#img-badge').attr('src', imgurl).show();
+        }
+
+        //展示图标
+        var callback_icon = function (imgurl) {
+            $('input[name="icon"]').val(imgurl);
+            $('#img-icon').attr('src', imgurl).show();
+        }
+
+        var badge_upload = new ossUpload();
+        badge_upload.init({
+            container_id: 'container_badge',
+            browse_button: 'selectfiles_badge',
+            serverUrl: '/oss/get_token',
+            width: 88,
+            height: 88,
+            wh_model: 'eq',
+            callback: callback_badge,
+        });
+
+        var icon_upload = new ossUpload();
+        icon_upload.init({
+            container_id: 'container_icon',
+            browse_button: 'selectfiles_icon',
+            serverUrl: '/oss/get_token',
+            width: 88,
+            height: 88,
+            wh_model: 'eq',
+            callback: callback_icon
+        });
+    });
+</script>
+</body>
+</html>

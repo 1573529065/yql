@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <div class="layui-form-item">
+                <form method="get">
+                    <div class="layui-inline">
+                        <input type="text" name="startdate" id="startdate" value="<?= $startdate ?>" placeholder="开始日期"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-inline">
+                        <input type="text" name="enddate" id="enddate" value="<?= $enddate ?>" placeholder="结束日期"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-inline">
+                        <select name="module">
+                            <option value="">请选择模块</option>
+                            <?php foreach ($modules as $key => $val) { ?>
+                                <option value="<?= $key ?>" <?php if ($key == $module) {
+                                    echo 'selected';
+                                } ?>><?= $val ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn layuiadmin-btn-list" type="submit">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+            <div style="padding-bottom: 10px;">
+                <a class="layui-btn" id="batchdel">删除</a>
+                <a class="layui-btn layui-btn-danger" id="truncate">清空</a>
+            </div>
+            <table class="layui-table layui-form">
+                <colgroup>
+                    <col width="60">
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th><input type="checkbox" lay-filter="check-all" lay-skin="primary"></th>
+                    <th>ID</th>
+                    <th>模块</th>
+                    <th>错误时间</th>
+                    <th>错误内容</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($list as $item) { ?>
+                    <tr>
+                        <td><input type="checkbox" name="ids" lay-skin="primary" value="<?= $item['id'] ?>"></td>
+                        <td><?= $item['loggerid'] ?></td>
+                        <td><?= $item['module'] ?></td>
+                        <td><?= date('Y-m-d H:i:s', $item['addtime']); ?></td>
+                        <td>
+                            <span class="view-detail">【详情】</span>
+                            <?php $errorinfo = json_decode($item['errorinfo'], true);
+                            echo mb_substr($errorinfo['error'], 0, 150) ?>
+                            <textarea class="layui-textarea"
+                                      style="display:none;height: 456px"><?php print_r(json_decode($item['errorinfo'], true)); ?></textarea>
+                        </td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+            <?= $page ?>
+        </div>
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script>
+    layui.use(['form', 'laydate'], function () {
+        var $ = layui.$
+            , form = layui.form
+            , layer = layui.layer
+            , laydate = layui.laydate;
+
+        //全选
+        form.on('checkbox(check-all)', function (data) {
+            $('input[name="ids"]').prop("checked", data.elem.checked);
+            form.render('checkbox');
+        });
+
+        //查看错误详情
+        $('.view-detail').click(function () {
+            layer.open({
+                title: '详情'
+                , type: 1
+                //,skin: 'layui-layer-rim'
+                , shadeClose: true
+                , area: ['700px', '500px']
+                , content: $(this).closest('td').find('textarea')
+            });
+        });
+
+        //批量删除
+        $('#batchdel').on('click', function () {
+            var ids = [];
+            $('input[name="ids"]:checked').each(function () {
+                ids.push($(this).val())
+            });
+            if (ids.length <= 0) {
+                layer.msg('请先选择记录', {icon:5, time:1000});
+                return false;
+            }
+            layer.confirm('确定要删除吗？', {btn: ['确定', '取消']}, function () {
+                $.ajax({
+                    type: "post",
+                    dataType: "json",
+                    url: "/logger/delete",
+                    data: {"ids": ids},
+                    success: function (json) {
+                        if (json.code == 200) {
+                            location.href = location.href;
+                        } else {
+                            layer.alert(json.msg)
+                        }
+                    }
+                });
+            });
+        });
+
+        //清空
+        $('#truncate').on('click', function () {
+            layer.confirm('确定要清空吗？', {
+                btn: ['确定', '取消'] //按钮
+            }, function () {
+                $.ajax({
+                    type: "post",
+                    dataType: "json",
+                    url: "/logger/delete",
+                    data: {"act": 'truncate'},
+                    success: function (json) {
+                        if (json.code == 200) {
+                            location.href = location.href;
+                        } else {
+                            layer.alert(json.msg)
+                        }
+                    }
+                })
+            })
+
+        });
+
+        //开始日期
+        var insStart = laydate.render({
+            elem: '#startdate'
+            , done: function (value, date) {
+                //更新结束日期的最小日期
+                insEnd.config.min = lay.extend({}, date, {
+                    month: date.month - 1
+                });
+
+                //自动弹出结束日期的选择器
+                insEnd.config.elem[0].focus();
+            }
+        });
+
+        //结束日期
+        var insEnd = laydate.render({
+            elem: '#enddate'
+            , done: function (value, date) {
+                //更新开始日期的最大日期
+                insStart.config.max = lay.extend({}, date, {
+                    month: date.month - 1
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

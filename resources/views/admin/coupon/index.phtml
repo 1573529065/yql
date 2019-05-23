@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto layui-row">
+            <div class="layui-form-item">
+                <div class="layui-col-xs2">
+                    <div class="layui-inline"><a class="layui-btn" href="/coupon/add">添加代金券</a></div>
+                </div>
+                <form method="get">
+                    <div class="layui-col-xs10 text-right">
+                        <div class="layui-inline">
+                            <input type="hidden" name="game_id" value="<?= $game_id ?>">
+                            <input type="text" name="game_name" id="game_name" value="<?= $game_name ?>" class="layui-input"
+                                   placeholder="请输入游戏名称" autocomplete="off">
+                        </div>
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <select name="admin_id">
+                                <option value="">选择添加人</option>
+                                <?php foreach ($adminList as $value) { ?>
+                                    <option value="<?= $value['id'] ?>" <?= $admin_id == $value['id'] ? 'selected' : '' ?>><?= $value['username'] ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <select name="status">
+                                <option value="">选择状态</option>
+                                <option value="1" <?= $status == 1 ? 'selected' : '' ?>>开启</option>
+                                <option value="0" <?= $status == 0 && strlen(trim($status)) ? 'selected' : '' ?>>关闭
+                                </option>
+                            </select>
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layuiadmin-btn-list" type="submit">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+            <table class="layui-table layui-form">
+                <colgroup>
+                    <col width="40">
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col width="150">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>所属游戏</th>
+                    <th>抵扣金额</th>
+                    <th>满减点</th>
+                    <th>开始日期</th>
+                    <th>结束日期</th>
+                    <th>有效期(天)</th>
+                    <th>是否过期</th>
+                    <th>领取人数</th>
+                    <th>使用人数</th>
+                    <th>使用率</th>
+                    <th>添加时间</th>
+                    <th>添加人</th>
+                    <th>状态</th>
+                    <th>审核</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($list as $item) { ?>
+                    <tr data-id="<?= $item['id'] ?>">
+                        <td><?= $item['id'] ?></td>
+                        <td><?= $item['game_name'] ?></td>
+                        <td><?= $item['value'] ?></td>
+                        <td><?= $item['condition'] ?></td>
+                        <td><?= date("Y-m-d", $item['start_time']) ?></td>
+                        <td><?= date("Y-m-d", $item['end_time']) ?></td>
+                        <td><?= ceil(($item['end_time'] - $item['start_time']) / (3600 * 24)) ?></td>
+                        <td style="color: <?= $item['end_time'] > time() ? "" : "red" ?>">
+                            <?= $item['end_time'] > time() ? "未过期" : "已过期" ?>
+                        </td>
+                        <td><?= $item['receive_count'] ?></td>
+                        <td><?= $item['used_num'] ?></td>
+                        <td><?= $item['used_num'] == 0 ? 0 : round($item['used_num'] / $item['receive_count'] * 100, 2) ?>%</td>
+                        <td><?= date("Y-m-d H:i:s", $item['addtime']) ?></td>
+                        <td><?= $adminInfo[$item['admin_id']]['username'] ?></td>
+                        <td>
+                            <input type="checkbox" value="" lay-filter="status" name="status"
+                                <?= ($item['status'] == 1) ? 'checked' : '' ?> lay-skin="switch" lay-text="开启|关闭">
+                        </td>
+                        <td>
+                            <?php if ($item['state'] == 0) { ?>
+                            <a class="layui-btn layui-btn-xs state">审核</a>
+                            <?php } ?>
+                        </td>
+                        <td>
+                            <?php if ($item['state'] == 0) { ?>
+                                <a class="layui-btn layui-btn-xs" href="/coupon/edit?id=<?= $item['id'] ?>&p=<?= $p ?>">
+                                    <i class="layui-icon layui-icon-edit"></i>编辑
+                                </a>
+                            <?php } ?>
+                            <a class="layui-btn layui-btn-xs layui-btn-danger delete">
+                                <i class="layui-icon layui-icon-delete"></i>删除
+                            </a>
+                        </td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+            <?= $page ?>
+        </div>
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script>
+    layui.extend({
+        autocomplete: '/layuiadmin/autocomplete/autocomplete'
+    }).use(['form', 'autocomplete'], function () {
+        var $ = layui.$
+            , form = layui.form
+            , autocomplete = layui.autocomplete;
+
+        // 状态修改
+        form.on('switch(status)', function (data) {
+            console.log(data.elem.checked);
+            var id = $(this).closest('tr').data('id');
+            var status = data.elem.checked ? 1 : 0;
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/coupon/toggle",
+                data: {id: id, field: "status", val: status},
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('操作成功', {icon: 1, time: 1000});
+                    } else {
+                        layer.alert(json.msg);
+                    }
+                }
+            });
+        });
+
+        // 审核
+        $('.state').on('click', function () {
+            var id = $(this).closest('tr').data('id');
+            layer.confirm('是否通过审核', {btn: ['确定', '取消']}, function () {
+
+                $.ajax({
+                    type: "POST",
+                    dataType: 'JSON',
+                    url: "/coupon/toggle",
+                    data: {id: id, field: "state", val: 1},
+                    success: function (json) {
+                        if (json.code == 200) {
+                            layer.msg('操作成功', {icon: 1, time: 1000});
+                            window.location.reload();
+                        } else {
+                            layer.alert(json.msg);
+                        }
+                    }
+                });
+            })
+        });
+
+        function batchdel(ids, callback) {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/coupon/toggle",
+                data: {"id": ids, 'field': 'status', 'val': -1},
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('删除成功', {icon: 1, time: 1000}, function () {
+                            if (typeof callback == 'function') callback();
+                        });
+                    } else {
+                        layer.alert(json.msg)
+                    }
+                }
+            })
+        }
+
+        //单个删除
+        $('.delete').on('click', function () {
+            var tr = $(this).closest('tr');
+            var ids = tr.data('id');
+            layer.confirm('确定要删除吗？', {btn: ['确定', '取消']}, function () {
+                batchdel(ids, function () {
+                    tr.remove();
+                });
+            });
+        });
+
+        //搜索游戏
+        $('#game_name').on('keydown', function (event) {
+            if (event.keyCode == 8) {
+                $('input[name="game_id"]').val('')
+            }
+        });
+        autocomplete.init({
+            elem: "#game_name",
+            textLength: 2,//触发长度
+            delay: 200,//触发延迟
+            callback: {
+                data: function (val, render) {
+                    $.ajax({
+                        type: "post",
+                        dataType: "json",
+                        url: "/game/autocomplete",
+                        data: {name: val},
+                        success: function (json) {
+                            if (json.code == 200) {
+                                render(json.data);
+                            } else {
+                                layer.alert(json.msg);
+                            }
+                        }
+                    });
+                },
+                selected: function (data) {
+                    console.log(data);
+                    $('input[name="game_id"]').val(data.value)
+                },
+                close: function () {
+                }
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

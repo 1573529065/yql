@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <div class="layui-form-item">
+                <form method="get">
+                    <div class="layui-col-xs2">
+                        <div class="layui-inline">
+                            <a class="layui-btn" href="/channel_faq/add">添加问题</a>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs10 text-right">
+                        <div class="layui-inline text-left" style="width: 140px;">
+                            <select name="admin_id">
+                                <option value="">请选择发布人</option>
+                                <?php foreach ($adminList as $item) {?>
+                                <option value="<?= $item['id'] ?>" <?= $admin_id == $item['id'] ? 'selected' : '' ?>><?= $item['nickname'] ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="layui-inline text-left" >
+                            <input type="text" name="start_time" id="startdate" value="<?= $start_time ?? '' ?>"
+                                   placeholder="开始日期" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline text-left">
+                            <input type="text" name="end_time" id="enddate" value="<?= $end_time ?? '' ?>"
+                                   placeholder="结束日期" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layuiadmin-btn-list" type="submit">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+            <table class="layui-table layui-form">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col width="160">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>标题</th>
+                    <th>内容</th>
+                    <th>发布人</th>
+                    <th>发布时间</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($list as $item) { ?>
+                    <tr data-id="<?= $item['id'] ?>">
+                        <td><?= $item['id'] ?></td>
+                        <td><?= $item['title'] ?></td>
+                        <td>
+                            <span class="view-detail">【详情】</span>
+                            <?= mb_strimwidth($item['content'], 0, 20, '...') ?>
+                            <textarea class="layui-textarea" style="display:none;height: 456px"><?= $item['content'] ?></textarea>
+                        </td>
+                        <td><?= $adminInfos[$item['admin_id']]['nickname'] ?? '' ?></td>
+                        <td><?= date('Y-m-d H:i:s', $item['addtime']) ?></td>
+                        <td><input type="checkbox" value="1" lay-filter="status" name="status" <?=($item['status'] == 1) ? 'checked' : ''?> lay-skin="switch" lay-text="启用|禁用"></td>
+                        <td>
+                            <a class="layui-btn layui-btn-xs" href="/channel_faq/edit?id=<?= $item['id'] ?>&p=<?= $p ?>">
+                                <i class='layui-icon layui-icon-edit'></i>编辑
+                            </a>
+                            <a class="layui-btn layui-btn-xs delete">
+                                <i class='layui-icon layui-icon-delete'></i>删除
+                            </a>
+                        </td>
+
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+            <?= $page ?>
+        </div>
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script>
+    layui.extend({
+        autocomplete: '/layuiadmin/autocomplete/autocomplete'
+    }).use(['form', 'laydate'], function () {
+        var $ = layui.$
+            , form = layui.form
+            , laydate = layui.laydate;
+
+        $('.delete').on('click', function () {
+            var tr = $(this).closest('tr');
+            var id = tr.data('id');
+            $.ajax({
+                type: 'POST',
+                dataType: 'JSON',
+                url: '/channel_faq/delete',
+                data: {'id': id},
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('删除成功', {icon: 1, time: 1000}, function () {
+                            tr.remove();
+                        });
+                    } else {
+                        layer.msg(json.msg, {icon: 5, time:1000});
+                    }
+                }
+            })
+        });
+
+
+        //启用禁用
+        form.on('switch(status)', function (data) {
+            console.log(data.elem.checked);
+            var id = $(this).closest('tr').data('id');
+            var status = data.elem.checked ? 1 : 0;
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/channel_faq/toggle",
+                data: {id: id, field: "status", val: status},
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('操作成功', {icon:1, time:1000});
+                    } else {
+                        layer.alert(json.msg);
+                    }
+                }
+            });
+        });
+
+        //查看错误详情
+        $('.view-detail').click(function () {
+            layer.open({
+                title: '详情'
+                , type: 1
+                , shadeClose: true
+                , area: ['700px', '500px']
+                , content: $(this).closest('td').find('textarea')
+            });
+        });
+
+        //开始日期
+        var insStart = laydate.render({
+            elem: '#startdate',
+            type: 'datetime',
+            done: function (value, date) {
+                //更新结束日期的最小日期
+                insEnd.config.min = lay.extend({}, date, {
+                    month: date.month - 1
+                });
+
+                //自动弹出结束日期的选择器
+                insEnd.config.elem[0].focus();
+            }
+        });
+
+        //结束日期
+        var insEnd = laydate.render({
+            elem: '#enddate',
+            type: 'datetime',
+            done: function (value, date) {
+                //更新开始日期的最大日期
+                insStart.config.max = lay.extend({}, date, {
+                    month: date.month - 1
+                });
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div style="padding-bottom: 10px;">
+                <a class="layui-btn" href="/faq/add_cate?p=<?= $p ?>">添加</a>
+            </div>
+            <table class="layui-table layui-form">
+                <colgroup>
+                    <col width="120">
+                    <col>
+                    <col>
+                    <col width="160">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>名称</th>
+                    <th>排序</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($list as $item) { ?>
+                    <tr data-id="<?= $item['id'] ?>">
+                        <td><?= $item['id'] ?></td>
+                        <td><?= $item['name'] ?></td>
+                        <td><input type="text" name="sort" class="table-text sort" data-val="<?= $item['sort']; ?>"
+                                   value="<?= $item['sort']; ?>"></td>
+                        <td>
+                            <a class="layui-btn layui-btn-xs" href="/faq/add_cate?id=<?= $item['id'] ?>&p=<?= $p ?>"><i
+                                        class="layui-icon layui-icon-edit"></i>编辑</a>
+                            <a class="layui-btn layui-btn-xs layui-btn-danger delete"><i class="layui-icon">&#xe640;</i>删除</a>
+                        </td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+            <?= $page ?>
+        </div>
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script>
+    layui.use('form', function () {
+        var $ = layui.$
+            , form = layui.form;
+
+        //修改排序
+        $('.sort').on('blur', function () {
+            var id = $(this).closest('tr').data('id');
+            var oldval = parseInt($(this).data('val'));
+            var sort = parseInt($(this).val());
+            var self = $(this);
+            if (sort >= 0 && oldval != sort) {
+                $.ajax({
+                    type: "POST",
+                    dataType: "JSON",
+                    url: '/faq/update_sort_cate',
+                    data: {"id": id, "sort": sort},
+                    success: function (json) {
+                        if (json.code == 200) {
+                            self.data('val', sort);
+                            layer.msg('操作成功', {time: 800});
+                        } else {
+                            layer.alert(json.msg)
+                        }
+                    }
+                })
+            }
+        });
+
+        //单个删除
+        $('.delete').on('click', function () {
+            var ids = [];
+            var tr = $(this).closest('tr');
+            ids.push(tr.data('id'));
+            layer.confirm('确定要删除吗？', {btn: ['确定', '取消']}, function () {
+                batchdel(ids, function () {
+                    tr.remove();
+                })
+            });
+        });
+
+        function batchdel(ids, callback) {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/faq/delete_cate",
+                data: {"ids": ids},
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('删除成功', {icon: 1, time: 1000}, function () {
+                            if (typeof callback == 'function') {
+                                callback();
+                            }
+                        });
+                    } else {
+                        layer.alert(json.msg)
+                    }
+                }
+            })
+        }
+
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <div class="layui-form-item">
+                <form method="get">
+                    <div class="layui-col-xs2">
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-primary" href="/recommend_type/index?p=<?= $lastPage ?>">返回</a>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs10 text-right">
+                        <input type="hidden" name="type_id" value="<?= $type_id ?>">
+                        <input type="hidden" name="last_page" value="<?= $lastPage ?>">
+                        <div class="layui-inline text-left" style="width: 120px;">
+                            <select name="platform">
+                                <option value="">系统</option>
+                                <option value="1" <?= $platform == 1 ? 'selected' : '' ?>>安卓</option>
+                                <option value="2" <?= $platform == 2 ? 'selected' : '' ?>>iOS</option>
+                                <option value="3" <?= $platform == 3 ? 'selected' : '' ?>>H5</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layuiadmin-btn-list" type="submit">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="layui-row highlight-block">
+            <div class="layui-col-md12">
+                推荐位名称：<?= $recommend_type_name ?>
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+            <table class="layui-table layui-form">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col width="160">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>排序</th>
+                    <th>游戏名称</th>
+                    <th>类型</th>
+                    <th>展示图</th>
+                    <th>标签</th>
+                    <th>描述</th>
+                    <th>推荐时间</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($list as $item) { ?>
+                    <tr data-id="<?= $item['id'] ?>">
+                        <td>
+                            <input type="text" name="sort" class="table-text sort" data-val="<?= $item['sort']; ?>"
+                                   value="<?= $item['sort']; ?>">
+                        </td>
+                        <td><?= $games[$item['game_id']]['name'] ?? '' ?></td>
+                        <td><?= $item['platform'] == 1 ? '安卓' : ($item['platform'] == 2 ? 'IOS' : ($item['platform'] == 3 ? 'H5' : '')) ?></td>
+                        <td><img src="<?= $item['img'] ?>" width="30px" height="30px"></td>
+                        <td><?= $item['tag'] ?></td>
+                        <td><?= $item['des'] ?></td>
+                        <td><?= $item['addtime'] > 0 ? date("Y-m-d H:i:s", $item['addtime']) : '' ?></td>
+                        <td>
+                            <input type="checkbox" value="0" lay-filter="status" name="status"
+                                <?= ($item['status'] == 1) ? 'checked' : '' ?> lay-skin="switch" lay-text="开启|关闭">
+                        </td>
+                        <td>
+                            <a class="layui-btn layui-btn-xs" href="/recommend_game/edit?id=<?= $item['id'] ?>&type_id=<?= $type_id ?>&last_page=<?= $lastPage ?>&p=<?= $p ?>">
+                                <i class="layui-icon layui-icon-edit"></i>编辑
+                            </a>
+                            <a class="layui-btn layui-btn-xs layui-btn-danger delete">
+                                <i class="layui-icon layui-icon-delete"></i>移除
+                            </a>
+                        </td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+            <?= $page ?>
+        </div>
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script>
+    layui.use('form', function () {
+        var $ = layui.$
+            , form = layui.form;
+
+        function batchdel(ids, callback) {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/recommend_game/delete",
+                data: {"ids": ids},
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('删除成功', {icon: 1, time: 1000}, function () {
+                            if (typeof callback == 'function') callback();
+                        });
+                    } else {
+                        layer.alert(json.msg)
+                    }
+                }
+            })
+        }
+
+        //单个删除
+        $('.delete').on('click', function () {
+            var ids = [];
+            var tr = $(this).closest('tr');
+            ids.push(tr.data('id'));
+            layer.confirm('确定要删除吗？', {btn: ['确定', '取消']}, function () {
+                batchdel(ids, function () {
+                    tr.remove();
+                });
+            });
+        });
+
+        //修改排序
+        $('.sort').on('blur', function () {
+            var id = $(this).closest('tr').data('id');
+            var oldval = parseInt($(this).data('val'));
+            var sort = parseInt($(this).val());
+            var self = $(this);
+            if (sort >= 0 && oldval != sort) {
+                updateAttr({'id': id, 'field': 'sort', 'val': sort}, function () {
+                    $("input[name='sort']").data('val', sort);
+                    layer.msg('操作成功', {icon: 1, time: 1000});
+                });
+            }
+        });
+
+        var updateAttr = function (data, callback) {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/recommend_game/toggle",
+                data: data,
+                success: function (json) {
+                    if (json.code == 200) {
+                        callback();
+                    } else {
+                        layer.alert(json.msg);
+                    }
+                }
+            });
+        };
+
+        //启用禁用
+        form.on('switch(status)', function (data) {
+            console.log(data.elem.checked);
+            var id = $(this).closest('tr').data('id');
+            var val = data.elem.checked ? 1 : 0;
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/recommend_game/toggle",
+                data: {id: id, field: 'status', val: val},
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('操作成功');
+                    } else {
+                        layer.alert(json.msg);
+                    }
+                }
+            });
+        });
+
+    });
+</script>
+</body>
+</html>

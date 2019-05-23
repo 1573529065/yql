@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto layui-row">
+            <div class="layui-col-xs2">
+                <div class="layui-inline">
+                </div>
+            </div>
+            <form method="get">
+                <div class="layui-col-xs10 text-right">
+                    <div class="layui-inline">
+                        <input type="text" name="order_no" id="order_no" value="<?= $order_no ?>" placeholder="订单号" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                    <div class="layui-inline" style="width: 140px">
+                        <input type="text" name="user_id" id="user_id" value="<?= $user_id ?>" placeholder="会员ID"
+                               autocomplete="off"
+                               class="layui-input">
+                    </div>
+                    <div class="layui-inline" style="width: 140px">
+                        <input type="text" name="user_name" id="user_name" value="<?= $user_name ?>" placeholder="会员名" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                    <div class="layui-inline" style="width: 140px">
+                        <input type="hidden" name="game_id" id="game_id" value="<?= $game_id ?>">
+                        <input type="text" name="game_name" id="game_name" value="<?= $game_name ?>" placeholder="游戏名" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                    <div class="layui-inline text-left" style="width: 140px">
+                        <select name="status" id="">
+                            <option value="">订单状态</option>
+                            <option value="0" <?= $status == 0 && strlen(trim($status)) ? 'selected' : '' ?>>未支付</option>
+                            <option value="1" <?= $status == 1 ? 'selected' : '' ?>>支付成功</option>
+                            <option value="-1" <?= $status == -1 ? 'selected' : '' ?>>交易异常</option>
+                        </select>
+                    </div>
+                    <div class="layui-inline text-left" style="width: 140px">
+                        <select name="pay_type" id="">
+                            <option value="">充值方式</option>
+                            <option value="1" <?= $pay_type == 1 ? 'selected' : '' ?>>支付宝</option>
+                            <option value="2" <?= $pay_type == 2 ? 'selected' : '' ?>>微信</option>
+                        </select>
+                    </div>
+                    <div class="layui-inline" style="width: 120px;">
+                        <input type="text" name="start_time" id="start_time" value="<?= $start_time ?>"
+                               placeholder="开始日期" autocomplete="off" class="layui-input">
+                    </div>
+                    <span class="layui-inline">至</span>
+                    <div class="layui-inline" style="width: 120px;">
+                        <input type="text" name="end_time" id="end_time" value="<?= $end_time ?>"
+                               placeholder="结束日期" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn layuiadmin-btn-list" type="submit">
+                            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="layui-row highlight-block">
+            <div class="layui-col-md12">
+                商品总金额：<span><?= $total_amount ?? 0 ?> 元</span>
+                充值币抵消：<span><?= $deduction_charge ?? 0 ?> 元</span>
+                赠送币抵消：<span><?= $deduction_giving ?? 0 ?> 元</span>
+                实际支付：<span><?= $actual_pay ?? 0 ?> 元</span>
+                未支付概率：<span><?= $no_pay ?? 0 ?> %</span>
+                异常概率：<span><?= $err_pay ?? 0 ?> %</span>
+            </div>
+        </div>
+        <div class="layui-card-body">
+            <table class="layui-table layui-form" id="table_id">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col width="80">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>会员名</th>
+                    <th>小号ID</th>
+                    <th>游戏名称</th>
+                    <th>游戏区服</th>
+                    <th>订单号</th>
+                    <th>下单时间</th>
+                    <th>充值方式</th>
+                    <th>商品金额</th>
+                    <th>代金券</th>
+                    <th>充值币</th>
+                    <th>赠送币</th>
+                    <th>实际支付</th>
+                    <th>订单状态</th>
+                    <th>时长(分)</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($list as $item) { ?>
+                    <tr data-id="<?= $item['id'] ?>">
+                        <td><?= $item['id'] ?></td>
+                        <td><?= $userInfos[$item['user_id']]['username'] ?? '' ?></td>
+                        <td><?= $item['account_id'] ?></td>
+                        <td><?= $gameInfos[$item['game_id']]['name'] ?? '' ?></td>
+                        <td>游戏区服</td>
+                        <td><?= $item['order_no'] ?></td>
+                        <td><?= date('Y-m-d H:i:s', $item['addtime']) ?></td>
+                        <td><?= $item['pay_type'] == 1 ? "支付宝" : ($item['pay_type'] == 2 ? "微信" : "") ?></td>
+                        <td><?= $item['amount'] ?></td>
+                        <td><?= $item['deduction_coupon'] ?></td>
+                        <td><?= $item['deduction_charge'] ?></td>
+                        <td><?= $item['deduction_giving'] ?></td>
+                        <td><?= $item['online_pay'] ?></td>
+                        <td><?php if ($item['status'] == 0) {
+                                echo "<span>未支付</span>";
+                            } elseif ($item['status'] == 1) {
+                                echo "<span style='color: green'>支付成功</span>";
+                            } elseif ($item['status'] == -1) {
+                                echo "<span style='color: red'>交易异常</span>";
+                            }
+                            ?>
+                        </td>
+                        <td><?= $item['paytime'] != 0 ? round(($item['paytime'] - $item['addtime'])/60, 2) : '' ?></td>
+                        <td>
+                            <a class="layui-btn layui-btn-xs" href="#">详情</a>
+                        </td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+            <?= $page ?>
+        </div>
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script>
+    layui.extend({
+        autocomplete: '/layuiadmin/autocomplete/autocomplete'
+    }).use(['form', 'laydate', 'table', 'autocomplete'], function () {
+        var $ = layui.$,
+            laydate = layui.laydate,
+            table = layui.table,
+            form = layui.form,
+            autocomplete = layui.autocomplete;
+
+        // 搜索支付单号
+        $('#order_no').on('keydown', function (event) {
+            if (event.keyCode == 8) {
+                $('input[name="order_no"]').val('')
+            }
+        });
+        autocomplete.init({
+            elem: "#order_no",
+            textLength: 2,//触发长度
+            delay: 200,//触发延迟
+            callback: {
+                data: function (val, render) {
+                    $.ajax({
+                        type: "post",
+                        dataType: "json",
+                        url: "/order/autocomplete",
+                        data: {name: val},
+                        success: function (json) {
+                            if (json.code == 200) {
+                                render(json.data);
+                            } else {
+                                layer.alert(json.msg);
+                            }
+                        }
+                    });
+                },
+                selected: function (data) {
+                    console.log(data);
+                    $('input[name="order_no"]').val(data.value)
+                },
+                close: function () {
+                }
+            }
+        });
+
+        // 搜索会员名
+        $('#user_name').on('keydown', function (event) {
+            if (event.keyCode == 8) {
+                $('input[name="user_id"]').val('')
+            }
+        });
+        autocomplete.init({
+            elem: "#user_name",
+            textLength: 2,//触发长度
+            delay: 200,//触发延迟
+            callback: {
+                data: function (val, render) {
+                    $.ajax({
+                        type: "post",
+                        dataType: "json",
+                        url: "/user/autocomplete",
+                        data: {name: val},
+                        success: function (json) {
+                            if (json.code == 200) {
+                                render(json.data);
+                            } else {
+                                layer.alert(json.msg);
+                            }
+                        }
+                    });
+                },
+                selected: function (data) {
+                    console.log(data);
+                    $('input[name="user_id"]').val(data.value)
+                },
+                close: function () {
+                }
+            }
+        });
+
+        // 搜索游戏
+        $('#game_name').on('keydown', function (event) {
+            if (event.keyCode == 8) {
+                $('input[name="game_id"]').val('')
+            }
+        });
+        autocomplete.init({
+            elem: "#game_name",
+            textLength: 2,//触发长度
+            delay: 200,//触发延迟
+            callback: {
+                data: function (val, render) {
+                    $.ajax({
+                        type: "post",
+                        dataType: "json",
+                        url: "/game/autocomplete",
+                        data: {name: val},
+                        success: function (json) {
+                            if (json.code == 200) {
+                                render(json.data);
+                            } else {
+                                layer.alert(json.msg);
+                            }
+                        }
+                    });
+                },
+                selected: function (data) {
+                    console.log(data);
+                    $('input[name="game_id"]').val(data.value)
+                },
+                close: function () {
+                }
+            }
+        });
+
+        //开始日期
+        var insStart = laydate.render({
+            elem: '#start_time'
+            , done: function (value, date) {
+                //更新结束日期的最小日期
+                insEnd.config.min = lay.extend({}, date, {
+                    month: date.month - 1
+                });
+
+                //自动弹出结束日期的选择器
+                insEnd.config.elem[0].focus();
+            }
+        });
+
+        //结束日期
+        var insEnd = laydate.render({
+            elem: '#end_time'
+            , done: function (value, date) {
+                //更新开始日期的最大日期
+                insStart.config.max = lay.extend({}, date, {
+                    month: date.month - 1
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

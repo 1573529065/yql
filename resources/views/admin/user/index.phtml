@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/modules/layui-icon-extend/iconfont.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css?v=20190515" media="all">
+</head>
+<style>
+    .underLine {
+        text-decoration-line: underline;
+        text-decoration-color: black;
+    }
+</style>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <div class="layui-form-item">
+                <form method="get">
+                    <div style="float: right">
+                        <div class="layui-inline">
+                            <input type="text" name="id" id="userId" value="<?= $id > 0 ? $id : '' ?>"
+                                   class="layui-input" placeholder="会员ID"
+                                   autocomplete="off">
+                        </div>
+                        <div class="layui-inline">
+                            <input type="text" name="username" id="username" value="<?= $username ?>"
+                                   class="layui-input" placeholder="会员名"
+                                   autocomplete="off">
+                        </div>
+                        <div class="layui-inline">
+                            <input type="text" name="mobile" value="<?= $mobile ?>" class="layui-input"
+                                   placeholder="手机号"
+                                   autocomplete="off">
+                        </div>
+                        <div class="layui-inline">
+                            <input type="text" name="reg_channel" value="<?= $reg_channel > 0 ? $reg_channel : '' ?>"
+                                   class="layui-input" placeholder="渠道ID"
+                                   autocomplete="off">
+                        </div>
+                        <div class="layui-inline">
+                            <input type="text" name="reg_imei" value="<?= $reg_imei ?>" class="layui-input"
+                                   placeholder="注册机器码"
+                                   autocomplete="off">
+                        </div>
+                        <div class="layui-inline">
+                            <input type="text" name="reg_ip" value="<?= $reg_ip ?>" class="layui-input"
+                                   placeholder="注册IP"
+                                   autocomplete="off">
+                        </div>
+
+                        <div class="layui-inline" style="height: 44px">
+                            <button class="layui-btn layuiadmin-btn-list" type="submit">
+                                <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+            <table class="layui-table layui-form">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col width="240">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>会员ID</th>
+                    <th>会员名</th>
+                    <th>昵称</th>
+                    <th>绑定手机</th>
+                    <th>消费VIP</th>
+                    <th>活跃VIP</th>
+                    <th>累计充值</th>
+                    <th>总余额</th>
+                    <th>所属渠道</th>
+                    <th>注册时间</th>
+                    <th>邀请人数</th>
+                    <th>好友充值</th>
+                    <th>禁用</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($list as $item) { ?>
+                    <tr data-id="<?= $item['id'] ?>" data-status="<?= $item['status'] ?>" id="tr-<?= $item['id'] ?>">
+                        <td><?= $item['id'] ?></td>
+                        <td><?= $item['username'] ?></td>
+                        <td><?= $item['nickname'] ?></td>
+                        <td><?= $item['mobile'] ?></td>
+                        <td>暂时不用</td>
+                        <td>暂时不用</td>
+                        <td><?= $item['total_charge'] ?></td>
+                        <td><?= $item['balance'] ?></td>
+                        <td><?= $item['reg_channel'] ?></td>
+                        <td><?= $item['reg_time'] != 0 ? date('Y-m-d H:i:s', $item['reg_time']) : '' ?></td>
+                        <td><?= $item['invite'] ?></td>
+                        <td><?= $item['friends_charge'] ?></td>
+                        <td>
+                            <a class="layui-btn-xs user_status <?= $item['status'] == 1 ? 'lock' : 'unlock' ?> "
+                               data-type="remarks_layout">
+                                <?php
+                                if ($item['status'] == 1) {
+                                    echo "<span style='color: green'><i class='iconfont icon-jiesuo'></i><i>锁定</i></span>";
+                                } else if ($item['status'] == 0) {
+                                    echo "<span style='color: red'><i class='iconfont icon-suo'></i><i>解锁</i></span>";
+                                }
+                                ?>
+                            </a>
+                        </td>
+                        <td>
+                            <a class="layui-btn layui-btn-xs message">
+                                <i class="layui-icon layui-icon-reply-fill"></i>发消息
+                            </a>
+                            <a class="layui-btn layui-btn-xs" href="/user/edit?id=<?= $item['id'] ?>&p=<?= $p ?>">
+                                <i class="layui-icon layui-icon-edit"></i>编辑
+                            </a>
+                            <a class="layui-btn layui-btn-xs" href="/user/user_det?id=<?= $item['id'] ?>">
+                                <i class="layui-icon layui-icon-chat"></i>详情
+                            </a>
+                        </td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+            <?= $page ?>
+        </div>
+    </div>
+</div>
+
+<!--锁定用户弹框-->
+<div id="lay-box" style="display: none;">
+    <form class="layui-form" action="" style="padding: 20px;">
+        <div class="layui-form-item layui-form-text">
+            <input type="hidden" name="user_id" class="box_user_id" value="">
+            <label class="layui-form-label">锁定原因</label>
+            <div class="layui-input-block">
+                <textarea name="remarks" placeholder="“锁定原因”  不会以消息的形式发送给该用户，仅供后台查阅" class="layui-textarea remarks"
+                          cols="60" rows="5" style="resize: none;"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">违规截图</label>
+            <div class="layui-input-block" id="container_snapshot">
+                <button type="button" class="layui-btn layui-btn-primary" id="selectfiles_snapshot"><i
+                            class="layui-icon">&#xe67c;</i>上传图片
+                </button>
+            </div>
+        </div>
+        <div style="padding-top: 30px;">
+            <table class="layui-table" lay-filter="table-box">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col width="160">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>操作时间</th>
+                    <th>日志类型</th>
+                    <th>备注</th>
+                    <th>操作人</th>
+                </tr>
+                </thead>
+                <tbody class="banned-log">
+                </tbody>
+            </table>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="text-align: center;margin-left: 0px;margin-top: 20px;">
+                <button class="layui-btn" lay-submit lay-filter="user-banned-lock">锁定用户</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--锁定用户弹框-->
+<div id="lay-box-unlock" style="display: none;">
+    <form class="layui-form" action="" style="padding: 20px;">
+        <div class="layui-form-item layui-form-text">
+            <input type="hidden" name="user_id" class="box_user_id" value="">
+            <label class="layui-form-label">解锁原因</label>
+            <div class="layui-input-block">
+                <textarea name="remarks" placeholder="“解锁原因”  不会以消息的形式发送给该用户，仅供后台查阅" class="layui-textarea remarks"
+                          cols="60" rows="5" style="resize: none;"></textarea>
+            </div>
+        </div>
+        <div style="padding-top: 30px;">
+            <table class="layui-table" lay-filter="table-box">
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col width="160">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>操作时间</th>
+                    <th>日志类型</th>
+                    <th>备注</th>
+                    <th>操作人</th>
+                </tr>
+                </thead>
+                <tbody class="banned-log">
+                </tbody>
+            </table>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="text-align: center;margin-left: 0px;margin-top: 20px;">
+                <button class="layui-btn" lay-submit lay-filter="user-banned-unlock">解锁用户</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--发消息弹框-->
+<div id="lay-box-message" style="display: none;">
+    <form class="layui-form" action="" style="padding: 20px;">
+        <div class="layui-form-item layui-form-text">
+            <input type="hidden" name="user_id" class="box_user_id" value="">
+            <label class="layui-form-label">消息内容</label>
+            <div class="layui-input-block">
+                <textarea name="message" placeholder="请输入想发送消息内容" class="layui-textarea remarks" cols="60" rows="5"
+                          style="resize: none;"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="text-align: center;margin-left: 0px;margin-top: 20px;">
+                <button class="layui-btn" lay-submit lay-filter="message">确定</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/layuiadmin/common.js"></script>
+<script type="text/javascript" src="/common/js/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script type="text/javascript" src="/common/js/oss.upload.lib.js?t=20190402"></script>
+<script>
+    layui.extend({
+        autocomplete: '/layuiadmin/autocomplete/autocomplete'
+    }).use(['form', 'autocomplete'], function () {
+        var $ = layui.$
+            , layer = layui.layer
+            , form = layui.form
+            , autocomplete = layui.autocomplete
+            , upload = layui.upload
+            , table = layui.table;
+
+        // 提交锁定
+        form.on('submit(user-banned-lock)', function (obj) {
+            var data = obj.field;
+            data.type = 2;
+            $.ajax({
+                url: '/user/user_lock',
+                type: "POST",
+                dataType: "JSON",
+                data: data,
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('修改成功', {icon: 1, time: 1000}, function () {
+                            window.setTimeout(function () {
+                                layer.closeAll();
+                            }, 100);
+                            $("#tr-" + data.user_id).find('.user_status').removeClass('lock').addClass('unlock').html('<span style="color:red"><i class="iconfont icon-suo"></i><i>解锁</i></span>')
+                        });
+                    } else {
+                        layer.msg(json.msg, {icon: 5, time: 1000}, function () {
+                            window.setTimeout(function () {
+                                layer.closeAll();
+                            }, 100);
+                        });
+                    }
+                }
+                });
+            return false;
+        });
+
+        // 提交解锁
+        form.on('submit(user-banned-unlock)', function (obj) {
+            var data = obj.field;
+            data.type = 3;
+            $.ajax({
+                url: '/user/user_lock',
+                type: "POST",
+                dataType: "JSON",
+                data: data,
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('修改成功', {icon: 1, time: 1000}, function () {
+                            window.setTimeout(function () {
+                                layer.closeAll();
+                            }, 100);
+                            $("#tr-" + data.user_id).find('.user_status').removeClass('unlock').addClass('lock').html('<span style="color:green"><i class="iconfont icon-jiesuo"></i><i>锁定</i></span>')
+                        });
+                    } else {
+                        layer.msg(json.msg, {icon: 5, time: 1000}, function () {
+                            window.setTimeout(function () {
+                                layer.closeAll();
+                            }, 100);
+                        });
+                    }
+                }
+            });
+            return false;
+        });
+
+
+        //上传截图
+        var callback_snapshot = function (imgurl) {
+            var html = '<span class="images"><input type="hidden" name="snapshot[]" value="' + imgurl + '"><img class="layui-upload-img" id="img-icon" src="' + imgurl + '" /></span>';
+            $('#selectfiles_snapshot').before(html);
+        };
+
+        var snapshot_upload = new ossUpload();
+        snapshot_upload.init({
+            container_id: 'container_snapshot',
+            browse_button: 'selectfiles_snapshot',
+            serverUrl: '/oss/get_token',
+            callback: callback_snapshot,
+        });
+
+        // 锁定
+        $('tr').on('click', '.lock', function (e) {
+            var id = $(this).closest('tr').data('id');
+            loadBannedLog(id, openLockBox);
+        });
+
+        // 解锁
+        $('tr').on('click', '.unlock', function (e) {
+            var id = $(this).closest('tr').data('id');
+            loadBannedLog(id, openUnlockBox);
+        });
+
+        var loadBannedLog = function (id, callback) {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "/user_banned/user_log",
+                data: {id: id},
+                success: function (json) {
+                    if (json.code == 200) {
+                        var list = json.data.list;
+                        var tr = '';
+                        $.each(list, function (i, e) {
+                            tr += '<tr>' +
+                                '<td>' + e.addtime + '</td>' +
+                                '<td>' + e.type + '</td>' +
+                                '<td>' + e.remarks + '</td>' +
+                                '<td>' + e.admin_name + '</td>' +
+                                '</tr>';
+                        });
+                        $('.banned-log').html(tr);
+                        $('.box_user_id').val(id);
+                        callback(id);
+                    } else {
+                        layer.alert(json.msg);
+                    }
+                }
+            });
+        };
+
+        var openLockBox = function () {
+            $(".remarks").val('');
+            $(".images").remove();
+            layer.open({
+                title: "锁定",
+                area: ['980px', '600px'],
+                type: 1,
+                shadeClose: true,
+                content: $('#lay-box'),
+            });
+        };
+
+        var openUnlockBox = function () {
+            $(".remarks").val('');
+            layer.open({
+                title: "解锁",
+                area: ['980px', '600px'],
+                type: 1,
+                shadeClose: true,
+                content: $('#lay-box-unlock'),
+            });
+        };
+
+        /** 发消息开始 **/
+        $('tr').on('click', '.message', function (e) {
+            var id = $(this).closest('tr').data('id');
+            $('.box_user_id').val(id);
+            $(".remarks").val('');
+            layer.open({
+                title: "发消息",
+                area: ['880px', '300px'],
+                type: 1,
+                shadeClose: true,
+                content: $('#lay-box-message'),
+            });
+        });
+
+        // 提交消息
+        form.on('submit(message)', function (obj) {
+            var data = obj.field;
+            $.ajax({
+                url: '/user/message',
+                type: "POST",
+                dataType: "JSON",
+                data: data,
+                success: function (json) {
+                    if (json.code == 200) {
+                        layer.msg('发送成功', {icon: 1, time: 1000}, function () {
+                            window.setTimeout(function () {
+                                layer.closeAll();
+                            }, 100);
+                        });
+                    } else {
+                        layer.msg(json.msg, {icon: 5, time: 1000}, function () {
+                            window.setTimeout(function () {
+                                layer.closeAll();
+                            }, 100);
+                        });
+                    }
+                }
+            });
+            return false;
+        });
+
+        /** 发消息结束 **/
+
+
+        // 搜索会员 开始
+        $('#username').on('keydown', function (event) {
+            if (event.keyCode == 8) {
+                $('input[name="id"]').val('')
+            }
+        });
+        autocomplete.init({
+            elem: "#username",
+            textLength: 2,//触发长度
+            delay: 200,//触发延迟
+            callback: {
+                data: function (val, render) {
+                    $.ajax({
+                        type: "post",
+                        dataType: "json",
+                        url: "/user/autocomplete",
+                        data: {name: val},
+                        success: function (json) {
+                            if (json.code == 200) {
+                                render(json.data);
+                            } else {
+                                layer.alert(json.msg);
+                            }
+                        }
+                    });
+                },
+                selected: function (data) {
+                    console.log(data)
+                    $('input[name="id"]').val(data.value)
+                },
+                close: function () {
+                }
+            }
+        });
+        // 搜索会员 结束
+    });
+</script>
+</body>
+</html>
