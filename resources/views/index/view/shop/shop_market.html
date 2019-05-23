@@ -1,0 +1,481 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>交易市场</title>
+        <link href="/static/css/mescroll.css" rel="stylesheet">
+        {include file="layout/head" /}
+        <style>
+            .mui-input-row.mui-search .mui-icon-clear {
+                top: 7px
+            }
+
+            .mui-search.mui-active:before {
+                top: 25px
+            }
+            .yue_btn{
+                margin-left: 5%;
+                margin-top: 2%
+            }
+            .str_wrap{
+                padding-left: 3em;
+                padding-right: 3em;
+                background: #fefefe;
+                height: 3em;
+                line-height: 3em;
+                font-size: 1.2em;
+            }
+        </style>
+        <link rel="stylesheet" href="/static/css/liMarquee.css">
+    </head>
+    <body>
+        {include file="layout/nav" /}
+
+        <div class="mui-content">
+            <div class="mui-scroll-wrapper" id="scroll" style="margin-bottom: 50px">
+                <div class="str5 str_wrap" style="color:red">
+                    友情提示：出售余额保证金为:{$conf['yue_bond']}。市场开启时间段为：{$start[0]}到{$start[1]}。&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </div>
+                <div class="mui-scroll">
+                    <div class="market-dialog white-box" id="action-market" style="padding:0;margin: 0">
+                        <div class="tabs mui-row">
+                            <div data-action="buy-market" class="mui-col-xs-6 mui-col-sm-6 active action-item" style="color: #17c3e5">
+                                买入
+                            </div>
+                            <div data-action="sale-market" class="mui-col-xs-6 mui-col-sm-6 action-item" style="color: #17c3e5">
+                                卖出
+                            </div>
+                        </div>
+                        <div class="market-form" id="buy-market">
+                            <p>可用余额: <strong>{$yue.yue}</strong></p>
+
+                            <div class="clear">
+                                {foreach $yue_buy as $v}
+                                <button class="yue_btn">{$v}</button>
+                                {/foreach}
+                            </div>
+                            <input type="hidden" value='' id='buy'>
+                            <!--<p>预计支出： <strong id="buy-total">0</strong>$</p>-->
+                            <button style="background-color: #17c3e5" class="mui-btn-block market-btn" onclick="buy()">确定购买</button>
+                        </div>
+                        <div class="market-form" id="sale-market" style="display: none">
+                            <p>可用余额: <strong style="color: #17c3e5">{$yue.yue}</strong></p>
+                            <div class="clear">
+                                {foreach $yue_sell as $v}
+                                <button class="yue_btn">{$v}</button>
+                                {/foreach}
+                            </div>
+                            <!--<p>提示： <strong id="sale-total"></strong></p>-->
+                            <button style="background-color: #17c3e5"  class="mui-btn-block market-btn" onclick="sale()">确定卖出</button>
+                        </div>
+                    </div>
+                    <div class="mui-input-row mui-search" style="margin: 10px">
+                        <input id="search" type="search" maxlength="11" style="background: #fff;border: 1px solid #eee;margin-bottom: 0;"
+                               class="mui-input-clear" placeholder="请输入对方手机号码查找">
+                    </div>
+                    <div class="market-dialog white-box" style="margin-top: 0">
+                        <div class="tabs mui-row">
+                            <div data-id="buy-list" i="0" class="mui-col-xs-6 list-tab mui-col-sm-6 active">
+                                求购列表
+                            </div>
+                            <div data-id="sale-list" i="1" class="mui-col-xs-6 list-tab mui-col-sm-6">
+                                出售列表
+                            </div>
+                        </div>
+                        <div class="market-list market-data-list" id="mescroll0">
+                            <div id="dataList0">
+
+                            </div>
+                            <!--<div class="market-list-item mui-row " >
+                                <div class="mui-col-sm-2 mui-col-xs-2">
+                                    <img src="img/headphoto.png">
+                                </div>
+                                <div class="mui-col-sm-7 mui-col-xs-7" style="padding-left: 5px">
+                                    <p class="text nick-name">昵称昵称</p>
+        
+                                    <p class="text small">能量数量：3</p>
+        
+                                    <p class="pd-n-b small"><span>单价：0.43 $</span><span
+                                            style="margin-left: 20px">单价：0.43 $</span></p>
+        
+                                    <p class="pd-n-b small"><span>单价：0.43 $</span><span
+                                            style="margin-left: 20px">单价：0.43 $</span></p>
+                                </div>
+                                <div class="mui-col-sm-3 mui-col-xs-3">
+                                    <p class="total-price" style="">10.00 CNY</p>
+                                    <a class="market-action-btn">出售</a>
+                                </div>
+                            </div>-->
+
+                        </div>
+                        <div class="market-list market-data-list" id="mescroll1" style="display: none">
+                            <div class="market-list-item mui-row" id="dataList1">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    {include file="layout/footer" /}
+    <script src="/static/js/mescroll.js"></script>
+    <script src="/static/js/echarts.simple.min.js"></script>
+    <script src="/static/js/jquery.liMarquee.js"></script>
+    <script>
+                                $('.str5').liMarquee({
+                                    hoverstop: false
+                                });
+                                $(function () {
+                                    $('.yue_btn').click(function () {
+                                        $('.yue_btn').each(function () {
+                                            $(this).css('background-color', '');
+                                        });
+                                        $(this).css('background-color', '#929292');
+                                        $('#buy').val($(this).text());
+                                    })
+                                    $(".change-buy-input").bind('change keydown keyup', function () {
+                                        var price = parseFloat($("#buy-price").val());
+                                        var number = parseFloat($("#buy-number").val());
+                                        var total = accMul(price, number);
+                                        $("#buy-total").html(total ? total : 0)
+                                    })
+                                    $(".change-sale-input").bind('change keydown keyup', function () {
+                                        var price = parseFloat($("#sale-price").val());
+                                        var number = parseFloat($("#sale-number").val());
+                                        var total = accMul(price, number);
+                                        $("#sale-total").html(total ? total : 0)
+                                    })
+                                    $("#action-market .action-item").click(function () {
+                                        $(this).siblings('.action-item').removeClass('active');
+                                        $(this).addClass('active');
+                                        var id = $(this).attr('data-action');
+                                        $("#action-market .market-form").hide();
+                                        $("#" + id).show();
+
+                                    })
+                                })
+                                function accMul(arg1, arg2) {
+                                    var m = 0, s1 = arg1.toString(), s2 = arg2.toString();
+                                    try {
+                                        m += s1.split(".")[1].length;
+                                    } catch (e) {
+                                    }
+                                    try {
+                                        m += s2.split(".")[1].length;
+                                    } catch (e) {
+                                    }
+                                    return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m);
+                                }
+                                //买入
+                                function buy() {
+                                    target = $(this);
+                                    yue = $('#buy').val();
+                                    if (!yue) {
+                                        mui.toast("请选择买入余额!");
+                                        return false;
+                                    }
+//                                    if ({$yue.yue} < yue) {
+//                                        mui.toast("余额不足,请及时充值！");
+//                                        return false;
+//                                    }
+                                    rmb =  Number(yue)*{$conf['yue_rmb_ratio']};
+                                    rmb = rmb.toFixed(2);
+                                    mui.confirm('确定以 '+rmb+'RMB 买入', '',  ['取消', '确定'], function (e) {
+                                       if (e.index == 0) {
+                                            window.location.reload();
+                                            return false;
+                                        }
+                                        mui.showLoading("处理中..", "div");
+                                        target.attr('disabled', true);
+                                        $.post("{:url('shop/add_buy_market')}", {yue: yue, rmb: rmb, type: 1}, function (data) {
+                                            mui.hideLoading();
+                                            target.attr('disabled', false);
+                                            if (data.code == 200) {
+                                                mui.confirm(data.msg, '', ['去查看', '取消'], function (e) {
+                                                    if (e.index == 0) {
+                                                        window.location.href = data.toUrl;
+                                                    } else {
+                                                        window.location.reload();
+                                                    }
+                                                })
+                                            } else {
+                                                mui.alert(data.msg);
+                                            }
+
+                                        }, 'json')
+
+                                    })
+
+
+                                }
+
+                                //卖出
+                                function sale() {
+                                    target = $(this);
+                                    yue = $('#buy').val();
+                                    if (!yue) {
+                                        mui.toast("请选择卖出余额!");
+                                        return false;
+                                    }
+                                    if (yue > {$yue.yue}) {
+                                        mui.toast("余额不足,请及时充值!");
+                                        return false;
+                                    }
+                                    rmb =  Number(yue)*{$conf['yue_rmb_ratio']};
+                                    rmb = rmb.toFixed(2);
+                                     mui.confirm('确定以 '+rmb+ ' RMB 卖出', '',  ['取消', '确定'], function (e) {
+                                        if (e.index == 1) {
+//                                            rmb = e.value;
+//                                            if (isNaN(rmb) || !rmb) {
+//                                                mui.toast("请输入数字！");
+//                                                return false;
+//                                            }
+                                            mui.showLoading("处理中..", "div");
+                                            target.attr('disabled', true);
+                                            $.post("{:url('shop/add_sale')}", {yue: yue, rmb: rmb, type: 1}, function (data) {
+                                                mui.hideLoading();
+                                                target.attr('disabled', false);
+                                                if (data.code == 200) {
+                                                    mui.confirm(data.msg, '', ['去查看', '取消'], function (e) {
+                                                        if (e.index == 0) {
+                                                            window.location.href = data.toUrl;
+                                                        } else {
+                                                            window.location.reload();
+                                                        }
+                                                    })
+                                                } else {
+                                                    mui.alert(data.msg);
+                                                }
+
+                                            }, 'json')
+                                        }
+
+                                    })
+
+
+                                }
+
+    </script>
+    <script>
+        $("#dataList1").on('click', '.buy-order-btn', function () {
+            var id = $(this).attr('data-id');
+            var nick_name = $(this).attr('data-nickname');
+            var $this = $(this);
+            mui.confirm('你确定要和' + nick_name + '交易吗', '', ['取消', '确定'], function (e) {
+
+                if (e.index == 1) {
+                    mui.prompt('请输入交易密码：', '请输入交易密码：', '', ['取消', '确定'], function (e1) {
+                        if (e1.index == 1) {
+                            psw = e1.value;
+                            $this.attr('disabled', true);
+                            mui.showLoading("处理中..", "div");
+                            $.post("{:url('shop/sale')}", {id: id, psw: psw}, function (response) {
+                                mui.hideLoading();
+                                $this.attr('disabled', false);
+                                mui.alert(response.msg);
+                                if (response.code == 200) {
+                                    $this.parents('.market-list-item').remove();
+                                }
+                            }, 'json')
+                        }
+                    }, 'div')
+                    document.querySelector('.mui-popup-input input').type = 'password';
+                }
+            })
+        })
+        $("#dataList0").on('click', '.sale-order-btn', function () {
+            var id = $(this).attr('data-id');
+            var nick_name = $(this).attr('data-nickname');
+            var $this = $(this);
+            mui.confirm('你确定要和' + nick_name + '交易吗', '', ['取消', '确定'], function (e) {
+                if (e.index == 1) {
+                    mui.prompt('请输入交易密码：', '请输入交易密码：', '', ['取消', '确定'], function (e1) {
+                        mui.showLoading("密码效验中..", "div");
+                        $.post("{:url('member/yan_tpsw')}", {psw: e1.value}, function (response) {
+                            mui.hideLoading();
+                            if (response.code == 200) {
+                                $this.attr('disabled', true);
+                                mui.showLoading("处理中..", "div");
+                                $.post("{:url('shop/buy')}", {id: id}, function (data) {
+                                    mui.hideLoading();
+                                    $this.attr('disabled', false);
+                                    mui.alert(data.msg);
+                                    if (data.code == 200) {
+                                        $this.parents('.market-list-item').remove();
+                                    }
+                                }, 'json')
+                            } else {
+                                mui.alert(response.msg);
+                            }
+                        }, 'json')
+
+                    }, 'div')
+                    document.querySelector('.mui-popup-input input').type = 'password';
+                }
+
+            })
+
+
+        })
+
+    </script>
+    <script>
+        $(function () {
+            $("#search").change(function () {
+                var value = $(this).val();
+                var reg = /^1[345789][0-9]{9}$/;
+                if (reg.test(value)) {
+                    //搜索
+                    var i = 0;
+                    $(".list-tab").each(function () {
+                        if ($(this).hasClass('active')) {
+                            i = Number($(this).attr("i"));
+                        }
+                    })
+                    mescrollArr[i] = initMescroll("mescroll" + i, "dataList" + i);
+                }
+            })
+            var curNavIndex = 0; //
+            var mescrollArr = new Array(2);
+            //初始化首页
+            mescrollArr[0] = initMescroll("mescroll0", "dataList0");
+            /*初始化菜单*/
+            $(".list-tab").click(function () {
+                var i = Number($(this).attr("i"));
+                if (curNavIndex != i) {
+                    //更改列表条件
+                    $(".list-tab").removeClass("active");
+                    $(this).addClass("active");
+                    //隐藏当前列表
+                    $("#mescroll" + curNavIndex).hide();
+                    //显示对应的列表
+                    curNavIndex = i;
+                    $("#mescroll" + curNavIndex).show();
+                    //取出菜单所对应的mescroll对象,如果未初始化则初始化
+                    if (mescrollArr[i] == null)
+                        mescrollArr[i] = initMescroll("mescroll" + i, "dataList" + i);
+                }
+            })
+
+            /*创建MeScroll对象*/
+            function initMescroll(mescrollId, clearEmptyId) {
+                //创建MeScroll对象,内部已默认开启下拉刷新,自动执行up.callback,刷新列表数据;
+                mescroll = new MeScroll(mescrollId, {
+                    //上拉加载的配置项
+                    up: {
+                        use: true, //是否初始化上拉加载; 默认true
+                        auto: true,
+                        isBoth: true,
+                        callback: getListData, //上拉回调,此处可简写; 相当于 callback: function (page) { getListData(page); }
+                        noMoreSize: 5, //如果列表已无数据,可设置列表的总数量要大于半页才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看; 默认5
+                        empty: {
+                            tip: "暂无相关数据~", //提示
+                        },
+                        clearEmptyId: clearEmptyId //相当于同时设置了clearId和empty.warpId; 简化写法;默认null
+                    },
+                    down: {
+                        use: false
+                    }
+
+                });
+                return mescroll;
+            }
+
+            /*联网加载列表数据  page = {num:1, size:10}; num:当前页 从1开始, size:每页数据条数 */
+            function getListData(page) {
+                //联网加载数据
+                //            console.log("curNavIndex=" + curNavIndex + ", page.num=" + page.num);
+                getListDataFromNet(curNavIndex, page.num, page.size, function (data) {
+                    //联网成功的回调,隐藏下拉刷新和上拉加载的状态;
+//                    console.log("data.length=" + data.length);
+                    mescrollArr[curNavIndex].endSuccess(data.length); //传参:数据的总数; mescroll会自动判断列表如果无任何数据,则提示空;列表无下一页数据,则提示无更多数据;
+                    //设置列表数据
+                    if (curNavIndex == 0) {
+                        setBuyList(data)
+                    } else {
+                        setSaleList(data)
+                    }
+                    //setListData(data);
+                }, function () {
+                    //联网失败的回调,隐藏下拉刷新和上拉加载的状态;
+                    mescrollArr[curNavIndex].endErr();
+                });
+            }
+
+            function setBuyList(data) {
+                var str = "";
+                for (var i = 0; i < data.length; i++) {
+                    var pd = data[i];
+                    if (!pd.avatar) {
+                        pd.avatar = '/static/img/denglu.png'
+                    }
+                    str += '<div class="market-list-item mui-row " ><div class="mui-col-sm-2 mui-col-xs-2">' +
+                            '<img src="' + pd.avatar + '"></div><div class="mui-col-sm-7 mui-col-xs-7" style="padding-left: 5px;padding-top:15px">' +
+                            '<p class="text nick-name">' + pd.nick_name + '</p><p class="text small">余额：' + pd.number + '</p>' +
+//                            '<p class="pd-n-b small"><span>单价：' + pd.price + ' $</span><span style="margin-left: 20px">总价：' + pd.total_money + ' $</span></p>' +
+                            '<p class="pd-n-b small"><span>成交量：' + pd.amount + '</span></p>' +
+                            '</div><div class="mui-col-sm-3 mui-col-xs-3"><p class="total-price" style="">' + pd.total_price_china + ' RMB</p>' +
+                            '<button class="market-action-btn sale-order-btn" href="javascript:void(0)" data-nickname="' + pd.nick_name + '" data-id="' + pd.id + '" >出售</button> </div></div>';
+                }
+                $("#dataList0").append(str);
+            }
+
+            function setSaleList(data) {
+                var str = "";
+                for (var i = 0; i < data.length; i++) {
+                    var pd = data[i];
+                    str += '<div class="market-list-item mui-row " ><div class="mui-col-sm-2 mui-col-xs-2">' +
+                            '<img src="' + pd.avatar + '"></div><div class="mui-col-sm-7 mui-col-xs-7" style="padding-left: 5px;padding-top:15px">' +
+                            '<p class="text nick-name">' + pd.nick_name + '</p><p class="text small">交易余额：' + pd.number + '</p>' +
+//                            '<p class="pd-n-b small"><span>单价：' + pd.price + ' $</span><span style="margin-left: 20px">总价：' + pd.total_money + ' $</span></p>' +
+                            '<p class="pd-n-b small"><span>成交量：' + pd.amount + '</span></p>' +
+                            '</div><div class="mui-col-sm-3 mui-col-xs-3"><p class="total-price" style="">' + pd.total_price_china + ' RMB</p>' +
+                            '<button class="market-action-btn buy-order-btn" href="javascript:void(0)" data-nickname="' + pd.nick_name + '" data-id="' + pd.id + '" >买入</button> </div></div>';
+                }
+                $("#dataList1").append(str);
+            }
+
+
+            /*联网加载列表数据*/
+            function getListDataFromNet(curNavIndex, pageNum, pageSize, successCallback, errorCallback) {
+                //延时一秒,模拟联网
+                if (curNavIndex == 0) {
+                    var url = "{:url('shop/yue_buy_list')}"
+                } else {
+                    var url = "{:url('shop/yue_sale_list')}"
+                }
+                var mobileVal = $("#search").val();
+                var mobile = '';
+                var reg = /^1[345789][0-9]{9}$/;
+                if (reg.test(mobileVal)) {
+                    mobile = mobileVal;
+                }
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    data: {
+                        page: pageNum,
+                        limit: pageSize,
+                        mobile: mobile
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.code == 200) {
+                            var listData = data.data;
+                            //回调
+                            successCallback(listData);
+                        } else {
+//                            console.log(data.message);
+                            listData = [];
+                            successCallback(listData);
+                        }
+                    }
+                })
+            }
+        })
+                ;
+
+    </script>
+
+</html>

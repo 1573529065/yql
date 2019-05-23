@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>交易</title>
+    {include file="layout/head" /}
+    <style>
+        .trade-btn {
+            background: #ffce1b;
+            color: #fff;
+            padding: 10px;
+            border: 1px solid #ffce1b;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<header class="mui-bar mui-bar-nav my-header">
+    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" href="{:url('member/index')}"></a>
+
+    <h1 id="title" class="mui-title">余额交易</h1>
+</header>
+
+  <div style="top: 44px;z-index: 50;"
+             class="mui-segmented-control mui-segmented-control-inverted mui-segmented-control-primary my-tabs">
+            <a class="mui-control-item " href="{:url('shop/buy_list')}">
+                买入
+            </a>
+            <a class="mui-control-item" href="{:url('shop/sale_list')}">
+                卖出
+            </a>
+            <a class="mui-control-item" href="{:url('shop/trade_list')}">
+                交易中
+            </a>
+            <a class="mui-control-item mui-active" href="{:url('shop/complete_list')}">
+                已完成
+            </a>
+        </div>
+<div class="mui-content">
+    <div class="mui-scroll-wrapper">
+        <div class="mui-scroll">
+            <div class="mui-table-view my-list"  style="top: 85px;">
+                {foreach $list as $order}
+                <ul class="my-list-item">
+                    <li class="clear">
+                        <span class="left">
+                            <span>编号:</span>
+                            <span class="value">{$order['id']}</span>
+                        </span>
+                    </li>
+                    <li class="clear">
+                        <span class="left">
+                            <span>类型:</span>
+                            <span class="value">
+                                         {switch order.types}
+                                        {case 1}
+                                        {if $order['user_id'] == $user_id} 买入 {/if}
+                                        {if $order['target_user_id'] == $user_id}卖出 {/if}
+                                        {/case}
+                                        {case 2}
+                                        {if $order['user_id'] == $user_id}卖出{/if}
+                                        {if $order['target_user_id'] == $user_id}买入{/if}
+                                        {/case}
+                                        {/switch}
+                            </span>
+                        </span>
+                    </li>
+                    <li class="clear">
+                        <span class="left">
+                            <span>交易余额:</span>
+                            <span class="value">{$order['number']} </span>
+                        </span>
+                    </li>
+                    <li class="clear">
+                        <span class="left">
+                            <span>RMB:</span>
+                            <span class="value">
+                                <strong style="color: #ffce1b;margin-left: 10px">￥{$order['total_price_china']}</strong>
+                            </span>
+                        </span>
+                    </li>
+                    <li class="clear">
+                        <span class="left">
+                            <span>完成时间:</span>
+                            <span class="value">{:date('Y-m-d H:i:s',$order['finish_time'])}</span>
+                        </span>
+                        <span class="right">
+                            <a href="{:url('shop/complete_details',['id'=>$order['id']])}"
+                               class="trade-btn">详细</a>
+                        </span>
+                    </li>
+                </ul>
+                {/foreach}
+                {if empty($list)}
+                <div>
+                    <img class="noneview" src="/static/img/noneview.png">
+                </div>
+                {/if}
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+{include file="layout/footer" /}
+
+</html>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html style="height: 100%">
+    <head>
+        <title>招募</title>
+        {include file="layout/head" /}
+        <style>
+            .mui-content{
+                height: 100%;
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                overflow: hidden;
+                background-size: cover;
+            }
+
+        </style>
+    </head>
+    <body style="height: 100%">
+        <!--<div class="mui-content" style="background: url('{$path}'); height: 100%;top: 0;bottom: 0;overflow: hidden;background-size: cover;">-->
+        <div class="mui-scroll">
+            <header class="mui-bar mui-bar-nav my-header" style="background-color: #2A2A2A;">
+                <a href="{:url('member/index')}" class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"
+                   style="color: white;"></a>
+                <h1 class="mui-title" style="color: white;">分享中心</h1>
+                <a class="mui-pull-right mui-icon" id="copy" onclick="copyShareUrl('{$code}')" data-clipboard-text="{$code}" href="javascript:;" style="color:white;font-size:15px;top:15%">复制邀请码</a>
+            </header>
+        </div>
+        <div class="mui-input-row my-input-row">
+            
+            <img src="{$path}" width="100%" min-height="1000px">
+        </div>
+        <!--</div>-->
+        {include file="layout/footer" /}
+        <script src="/static/js/clipboard.min.js" type="text/javascript"></script>
+
+    </body>
+    <script>
+     var btn = document.getElementById('copy');
+        var clipboard = new ClipboardJS(btn);
+
+        clipboard.on('success', function (e) {
+            mui.toast('复制成功');
+        });
+
+        clipboard.on('error', function (e) {
+            mui.toast('复制失败');
+        });
+   function copyShareUrl(code){
+            
+    mui.plusReady(function(){
+         //复制链接到剪切板
+        var copy = code;
+      if(mui.os.ios){
+        }else{
+            //安卓
+          var context = plus.android.importClass("android.content.Context"); 
+          var main = plus.android.runtimeMainActivity(); 
+          var clip = main.getSystemService(context.CLIPBOARD_SERVICE); 
+          plus.android.invoke(clip,"setText",copy); 
+          mui.toast("已成功复制到剪贴板"); 
+        }
+        });
+    }
+    </script>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html id="change-password">
+
+    <head>
+        <meta charset="utf-8">
+        <title>兑换记录</title>
+        {include file="layout/head" /}
+    </head>
+    <style>
+        .pagination{
+            list-style:none;
+        }
+        .pagination li {  float:left;margin: 2%}
+    </style>
+    <body class="login-body">
+        <header class="mui-bar mui-bar-nav my-header" style="background-color: #17c3e5">
+            <a href="javascript:history.back(-1)" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
+
+            <h1 class="mui-title">兑换记录</h1>
+            <span style="float: right;margin-top:12px;color:#808080">共{$count}条记录</span>
+        </header>
+        <div class="mui-content container">
+            <table style="width: 100%;text-align: center">
+                {if $count == 0}
+                <br><br>
+                <div style='width:100%;text-align: center;font-size: 20px;color: #C0C0C0'> 没有找到相关记录 </div>
+                {else /}
+                <th style="width:30%">兑换余额</th>
+                <th style="width:30%">获得积分</th>
+                <th style="width:40%">时间</th>
+                {foreach $list as $key=>$vo }
+                <tr>
+                    <td>{$vo.yue}</td>
+                    <td>{$vo.jifen}</td>
+                    <td>{$vo.get_time}</td>
+                </tr>
+                {/foreach}
+                {/if}
+            </table>
+        </div>
+        <div style="">
+            {:$list->render()}
+        </div>
+        {include file="layout/footer" /}
+    </body>
+</html>

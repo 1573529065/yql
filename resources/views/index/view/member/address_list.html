@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html id="change-password">
+
+    <head>
+        <meta charset="utf-8">
+        <title>收货地址</title>
+        {include file="layout/head" /}
+        <style>
+            button{
+                margin-top: 3%
+            }
+        </style>
+    </head>
+
+    <body class="login-body">
+        <header class="mui-bar mui-bar-nav my-header" style="background-color: #2A2A2A">
+            <a href="/index/member/index" class="mui-icon mui-icon-left-nav mui-pull-left" style="color:white"></a>
+
+            <h1 class="mui-title"  style="color:white;">收货地址</h1>
+            <a href="/index/member/address_add" class="mui-pull-right mui-icon" style="color:white;font-size:15px;top:15%">新增地址</a>
+        </header>
+        <br><br>
+        <span style="color:red">友情提示:默认地址为最新添加的地址</span>
+        {if count($list)>0}
+        {foreach $list as $key=>$vo }
+        <div>
+            <div class="mui-input-row my-input-row">
+
+                <div style="width:80%">
+                    <label style="width:100%">{$vo.address}</label>
+                    <label style="width:50%">{$vo.name}</label>
+                    <label style="width:50%">{$vo.mobile}</label>
+                </div>
+                <button class="edit" data-url="{:url('address_edit',['id'=>$vo.id])}">编辑</button>
+                <button class="del" data-url="{:url('address_del',['id'=>$vo.id])}">删除</button>
+            </div>
+            <hr>
+        </div>
+        {/foreach}
+          {else /}
+            <div style='margin-top: 20px;text-align: center;color: lightgrey;font-size: 20px'>暂无收货地址</div>
+            {/if}
+        {include file="layout/footer" /}
+    </body>
+    <script>
+        mui.init();
+        $('.edit').click(function () {
+                var url = $(this).attr('data-url');
+                mui.openWindow({
+                url: url,
+                id: 'edit',
+            })  
+        });
+        $('.del').click(function () {
+            var url = $(this).attr('data-url');
+            mui.confirm("确定删除?", '', ['取消', '确定'], function (e) {
+                if (e.index == 0) {
+                    return;
+                }
+                
+                $.ajax({
+                    url: url,
+                    type: "get",
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.code == 200) {
+                            window.location.reload(); 
+                        } else {
+                            mui.alert(data.msg);
+                        }
+                    }
+                })
+            })
+        });
+        $('#convert').click(function () {
+            mui.openWindow({
+                url: "{:url('convert_jifen')}",
+                id: 'convert_jifen',
+            })
+        })
+
+
+    </script>
+</html>

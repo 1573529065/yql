@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html id="change-password">
+
+    <head>
+        <meta charset="utf-8">
+        <title>新增地址</title>
+        {include file="layout/head" /}
+        <style>
+            button{
+                margin-top: 3%
+            }
+        </style>
+    </head>
+
+    <body class="login-body">
+        <header class="mui-bar mui-bar-nav my-header" style="background-color: #2A2A2A">
+            <a href="javascript:history.back(-1)" class="mui-icon mui-icon-left-nav mui-pull-left" style="color:white"></a>
+
+            <h1 class="mui-title" style="color:white">新增地址</h1>
+            <!--<a href="/index/member/address_add" class="mui-pull-right mui-icon" style="color:white;font-size:15px;top:15%">新增地址</a>-->
+        </header>
+        <div class="mui-content container">
+            <div class="mui-input-row my-input-row">
+                <div class="mui-input-row my-input-row">
+                    <label>姓名：</label>
+                    <input type="text" onsubmit="return false" class="mui-input-text" placeholder="请输入姓名"
+                           name="name">
+                </div>
+                <div class="mui-input-row my-input-row">
+                    <label>地址：</label>
+                    <input type="text" onsubmit="return false" class="mui-input-text" placeholder="请输入地址(最大30字)"
+                           name="address">
+                </div>
+                <div class="mui-input-row my-input-row">
+                    <label>手机号：</label>
+                    <input type="text" onsubmit="return false" class="mui-input-text" placeholder="请输入手机号"
+                           name="mobile">
+                </div>
+                <!--                <div class="mui-input-row my-input-row">
+                                    <label>设为默认地址</label>
+                                    <input type="checkbox"style="width:20px;height:20px;float: left;margin-top: 3%" name="is_d" value="1" checked>
+                                </div>-->
+                <div class="mui-input-row my-input-row">
+                    <button type="button" class="mui-btn mui-btn-success" style="width: 100%" id="convert">确定</button>
+                </div>
+            </div>
+            {include file="layout/footer" /}
+    </body>
+    <script>
+        mui.init();
+        $('#convert').click(function () {
+            var name = $.trim($("input[name='name']").val());
+            var address = $.trim($("input[name='address']").val());
+            var mobile = $.trim($("input[name='mobile']").val());
+           
+            if (!name || !address || !mobile) {
+                mui.toast('请填写完整!');
+                return;
+            }
+            if (name.length > 10 || name.length <2) {
+                mui.toast('姓名长度有误!');
+                return;
+            }
+            if (address.length > 30 || address.length < 6) {
+                mui.toast('地址长度有误!');
+                return;
+            }
+             
+            //手机号正则
+            var phoneReg = /(^1[3|4|5|6|7|8|9]\d{9}$)|(^09\d{8}$)/;
+            //电话
+            var phone = mobile;
+            if (!phoneReg.test(phone)) {
+                mui.toast('请输入有效的手机号码!');
+                return false;
+            }
+//             var is_d = $("input[name='is_d']:checked").val();
+            mui.showLoading("加载中...");
+            $.ajax({
+                url: "{:url('member/address_add')}",
+                type: "post",
+                data: {name: name, address: address, mobile: mobile},
+                //        processData:false,
+                //        contentType:false,
+                dataType: 'json',
+                success: function (data) {
+                    mui.hideLoading();
+                    if (data.code == 200) {
+                        window.location.href="./address_list";
+                    } else {
+                        mui.alert(data.msg);
+                    }
+                }
+            })
+        });
+
+
+    </script>
+</html>

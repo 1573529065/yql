@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    {include file="layout/head" /}
+    <link rel="stylesheet" href="__CSS__/liMarquee.css">
+    <style>
+        #dowebok {
+            width: 50%;
+            height: 300px;
+            margin: 0 auto;
+            font-size: 14px;
+        }
+
+        #dowebok:hover {
+            background-color: white
+        }
+
+        #dowebok ul {
+            margin: 0;
+            line-height: 30px;
+        }
+
+        #dowebok a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        #dowebok a:hover {
+            text-decoration: underline;
+        }
+
+        #dowebok1 {
+            width: 50%;
+            height: 300px;
+            margin: 0 auto;
+            font-size: 14px;
+        }
+
+        #dowebok1 ul {
+            margin: 0;
+            line-height: 30px;
+        }
+
+        #dowebok1 a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        #dowebok1:hover {
+            background-color: white
+        }
+
+        #dowebok1 a:hover {
+            text-decoration: underline;
+        }
+
+        #dowebok1 li {
+            border-bottom: 1px #333333 dotted;
+        }
+
+        #dowebok li {
+            border-bottom: 1px #333333 dotted;
+        }
+    </style>
+</head>
+
+<body class="index">
+{include file="layout/banner" /}
+{include file="layout/shutter" /}
+
+
+<!-- banner end -->
+<div class="main">
+    <!-- row-f01 -->
+    <div class="row-f01">
+        <div class="wp">
+            <!-- m-fq01 -->
+            <div class="m-fq01">
+                <ul class="ul-fq01">
+                    {foreach $jianjie as $k => $j}
+                    <li class="s{$k+1} wow fadeInUp" data-wow-delay=".{$k*3}s">
+                        <h3>{$j['title']}</h3>
+                        <div class="desc">
+                            <p>{$j['content']}</p>
+                        </div>
+                    </li>
+                    {/foreach}
+
+                </ul>
+            </div>
+            <!-- m-fq01 end -->
+        </div>
+    </div>
+    <!-- row-f01 end -->
+    <!-- row-f02 -->
+    <div class="row-f02">
+        <div class="wp">
+            <!-- g-tit01 -->
+            <div class="g-tit01 wow fadeInDown">
+                <h2>招聘公告</h2>
+            </div>
+            <!-- g-tit01 end -->
+            <!-- ban-f02 -->
+
+            <div class="ban-f02">
+                <div class="slider">
+                    <div class="item wow fadeInUp" data-wow-delay=".0s">
+                        <h3 style='margin-left:35%'>船员招聘中介担保</h3>
+                        <div id="dowebok">
+
+                            <ul>
+                                {foreach $inter as $i}
+                                <li>
+                                    {$i['content']}
+                                </li>
+
+                                {/foreach}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="item wow fadeInUp" data-wow-delay=".3s">
+                        <h3 style='margin-left:35%'>船员招聘公告</h3>
+                        <div class="inner">
+                            <div id="dowebok1">
+                                <ul>
+                                    {foreach $give as $g}
+                                    <li>
+                                        <a href="{:url('give_details',['id'=>$g['id']])}">{$g['title']}</a>
+                                    </li>
+                                    {/foreach}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <!-- ban-f02 end -->
+        </div>
+    </div>
+    <!-- row-f02 end -->
+</div>
+
+{include file="layout/footer" /}
+   
+

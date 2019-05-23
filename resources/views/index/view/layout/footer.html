@@ -1,0 +1,91 @@
+<script type="text/javascript" src="__JS__/jquery-1.8.3.min.js"></script>
+<!--<script type="text/javascript" src="__JS__/jquery.min.js"></script>-->
+<script src="__JS__/lib.js"></script>
+<script src="__JS__/wow.min.js"></script>
+<script type="text/javascript" src="__JS__/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="__JS__/jquery.liMarquee.js"></script>
+<script>
+    $(function () {
+        $('#dowebok').liMarquee({
+            direction: 'up',
+            runshort: false
+        });
+    });
+    $(function () {
+        $('#dowebok1').liMarquee({
+            direction: 'up',
+            runshort: false
+        });
+    });
+</script>
+<script type="text/javascript">
+    // wow
+    var w_win = $(window).width();
+    if (w_win >= 1199) {
+        if (!(/msie [6|7|8|9]/i.test(navigator.userAgent))) {
+            new WOW().init();
+        }
+        ;
+    }
+</script>
+<link rel="stylesheet" type="text/css" href="__CSS__/slick.css"/>
+<script type="text/javascript" src="__JS__/slick.min.js"></script>
+
+<script type="text/javascript" src="__JS__/velocity.js"></script>
+<script type="text/javascript" src="__JS__/shutter.js"></script>
+<script type="text/javascript">
+    $('.ban-f02 .slider').slick({
+        dots: false,
+        arrows: false,
+        slidesToShow: 2,
+        autoplay: true,
+        autoplaySpeed: 2000,
+        responsive: [{
+            breakpoint: 768,
+            settings: {
+                slidesToShow: 1,
+                dots: true
+            }
+        }]
+    });
+    $('.shutter').shutter({
+        shutterW: '100%', // 容器宽度
+        shutterH: 450, // 容器高度
+        isAutoPlay: true, // 是否自动播放
+        playInterval: 3000, // 自动播放时间
+        curDisplay: 3, // 当前显示页
+        fullPage: false // 是否全屏展示
+    });
+</script>
+<div class="footer">
+    <div class="wp">
+        <div class="fd-left">
+            <div class="fd-logo">
+                <a href="javascript:;"><img src="{$cf['logo']}" alt=""/></a>
+            </div>
+            <p class="copyright">© {$cf['record']}</p>
+        </div>
+        <div class="fd-contact">
+            <div class="item">
+                <h3>联系来访</h3>
+                <p><a href="#">电话：{$cf['mobile']}</a></p>
+                <p><a href="mailto:Email：{$cf['email']}">Email：{$cf['email']}</a></p>
+            </div>
+            <div class="item">
+                <h3>地址</h3>
+                <p>{$cf['address']}</p>
+            </div>
+        </div>
+        <div class="fd-qr">
+            <div class="con">
+
+                <div class="item" style="width:100%">
+                    <div class="pic">
+                        <img src="{$cf['wx']}" alt="">
+                    </div>
+                    <h3>微信公众号<br>{$cf['name']}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

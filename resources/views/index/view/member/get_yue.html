@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html id="change-password">
+
+    <head>
+        <meta charset="utf-8">
+        <title>余额转出</title>
+        {include file="layout/head" /}
+    </head>
+
+    <body class="login-body" style="background-color:#17C3E5">
+        <header class="mui-bar mui-bar-nav my-header" style="background-color: #17c3e5">
+            <a href="/index/index/index" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
+
+            <h1 class="mui-title">转入</h1>
+            <!--<a href="#" class="mui-pull-right mui-icon" style="color:white;font-size:15px;top:15%">保存二维码</a>-->
+        </header>
+        <div class="mui-content container">
+            <div class="mui-input-row my-input-row" style="text-align: center">
+                <img src="{$path}" width="200" height="200">
+                <br>
+                <span>扫一扫，向我付款</span>
+            </div>
+            <br><br><br><br>
+            <div style="text-align: center"><a href="/index/member/out_log?type=2 " class="mui-icon" style="color:white;font-size:15px">转入记录</a></div>
+        </div>
+        <script>
+            mui.init();
+            function saveImage(){
+                var image = new Image();
+                image.src= imageUrl;
+                
+            }
+        </script>
+
+        {include file="layout/footer" /}
+    </body>
+</html>

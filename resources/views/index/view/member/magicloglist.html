@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>账单</title>
+    {include file="layout/head" /}
+    <link href="/static/css/mescroll.css" rel="stylesheet">
+</head>
+
+<body>
+<header class="mui-bar mui-bar-nav my-header" style="background-color: #17c3e5">
+    <a href="/index/member/index" class="mui-icon mui-icon-left-nav mui-pull-left" style="color: black;"></a>
+
+    <h1 id="title" class="mui-title">账单</h1>
+</header>
+<div style="top: 44px;z-index: 50;position: fixed"
+     class="mui-segmented-control mui-segmented-control-inverted mui-segmented-control-primary my-tabs">
+    <a href="/index/member/magicloglist?type=1"
+       class="mui-control-item {if $Request.get.type == 1 || !$Request.get.type}mui-active{/if}" id="income" did="1">
+        收入
+    </a>
+
+    <a href="/index/member/magicloglist?type=-1" class="mui-control-item {if $Request.get.type == -1}mui-active{/if}"
+       id="spend" did="-1">
+        支出
+    </a>
+</div>
+<div class="mui-content">
+    <div class="mui-scroll-wrapper" id="scroll" style="top: 94px;">
+        <div class="mui-scroll" >
+            <div class="mui-table-view my-list" id="data-box">
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+{include file="layout/footer" /}
+<script>
+    mui.init({
+        pullRefresh: {
+            container: '#scroll',//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等
+            up: {
+                height: 50,//可选.默认50.触发上拉加载拖动距离
+                auto: true,//可选,默认false.自动上拉加载一次
+                contentrefresh: "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+                contentnomore: '没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+                callback: getList //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+            }
+        }
+    });
+    var page = 1;
+    var limit = 20;
+    function getList() {
+        $.get("{:url('member/magicloglist',['type'=>$type])}", {page: page, limit: limit}, function (response) {
+            if (response.code == 0) {
+                var data = response.data;
+                if (data.length > 0) {
+                    var content = "";
+                    for (var i = 0; i < data.length; i++) {
+                        content += '<ul class="my-list-item"><li class="clear"> <span class="left"> <span>类型:</span>' +
+                                '<span class="value">' + data[i].types + '</span></span></li><li class="clear"><span class="left">' +
+                                '<span>数量:</span><span class="value">' + data[i].magic + '魔石</span></span> </li><li class="clear">' +
+                                '<span class="left"><span>时间:</span><span class="value">' + data[i].create_time + '</span></span></li></ul>';
+
+                    }
+
+                    $("#data-box").append(content);
+                    page++;
+                    mui('#scroll').pullRefresh().endPullupToRefresh(false)
+                }else{
+                    mui('#scroll').pullRefresh().endPullupToRefresh(true);
+                }
+            }else{
+                mui.toast('网络异常,请稍候再试');
+                plus.nativeUI.closeWaiting();
+                mui('#scroll').pullRefresh().endPullupToRefresh(true);
+            }
+        }, 'json')
+    }
+</script>
+<script>
+</script>
+
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    {include file="layout/head" /}
+
+</head>
+
+<body class="">
+<div class="header fix  wow fadeInDown">
+    <span class="menuBtn"></span>
+    {include file="layout/banner" /}
+</div>
+{include file="layout/shutter" /}
+<div class="main">
+    <div class="wp">
+        <div class="row-jg07">
+            {foreach $list as $k => $l}
+            <!--<a href="" target="_blank">-->
+            <div class="img-txt {if $k%2 == 0}img-txt-r {/if}">
+                <div class="pic wow fadeInLeft">
+                    <img src="{$l['img']}" alt="">
+                </div>
+                <div class="txt wow fadeInRight">
+                    <h3>{$l['title']}</h3>
+                    <p>{:htmlspecialchars_decode($l['introduce'])}</p>
+                </div>
+            </div>
+            <!--</a>-->
+            {/foreach}
+
+
+        </div>
+        <div id="pages">
+            {:$list->render()}
+        </div>
+    </div>
+
+</div>
+
+{include file="layout/footer" /}

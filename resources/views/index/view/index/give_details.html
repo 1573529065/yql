@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    {include file="layout/head" /}
+    <style>
+        table {
+            border-top: 1px solid #afcde3;
+            border-left: 1px solid #afcde3;
+            border-right: 1px solid #afcde3;
+            border-bottom: 1px solid #afcde3;
+        }
+
+        .comapnybg {
+            background: #e2f2fb;
+        }
+
+        tr {
+            line-height: 50px;
+        }
+
+        td {
+            border-bottom: 1px solid #afcde3;
+            border-right: 1px solid #afcde3;
+            line-height: 32px;
+        }
+
+        .qq_list li {
+            float: left;
+            padding: 5px 0 0 0;
+            width: 100px;
+        }
+    </style>
+</head>
+
+<body class="body-mg01">
+<div class="header fix header-bg01 wow fadeInDown">
+    <span class="menuBtn"></span>
+    {include file="layout/banner" /}
+</div>
+<div class="main">
+    <div class="wp">
+        <!-- cur -->
+        <div class="cur">
+            <a href="#">船员招聘公告</a> > 招聘详情
+        </div>
+        <!-- cur end -->
+        <!-- row-jg01 -->
+        <div class="row-j01">
+            <h3><a href="#">{$data['title']}</a></h3>
+
+            <div class="txt wow fadeInRight">
+                <p></p>
+            </div>
+        </div>
+        <!-- row-jg01 end -->
+        <!-- row-jg02 -->
+        <div class="row-j02">
+            <div class="txt wow fadeInUp">
+                <h3>招聘详情</h3>
+                {:htmlspecialchars_decode($data['content'])}
+                <br><br>
+                <table width="711" cellspacing="0" cellpadding="0" border="0">
+                    <tbody>
+                    <tr>
+                        <td class="comapnybg" colspan="4">
+                            <strong class="redDark">联系方式
+                            </strong></td>
+                    </tr>
+                    <tr>
+                        <td class="comapnybg" width="93" align="right">公司名称：</td>
+                        <td colspan="3" align="left" style='text-align:center'>
+                            <strong>{$data['name']}</strong>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="comapnybg" align="right">联&nbsp;系&nbsp;人：</td>
+                        <td align="left">&nbsp;{$data['ren']}</td>
+                        <td class="comapnybg" align="right">联系电话：</td>
+                        <td align="left">&nbsp;{$data['tel']}</td>
+                    </tr>
+                    <tr>
+                        <td class="comapnybg" align="right">手机号码：</td>
+                        <td align="left">&nbsp;{$data['mobile']}</td>
+                        <td class="comapnybg" width="75" align="right">在线<strong style="padding:0;">QQ</strong>：</td>
+                        <td style="line-height:13px;text-align:center;" width="329" align="left">&nbsp;
+
+                            <ul class="qq_list">
+                                {foreach $data['qq'] as $q}
+                                <li>
+                                    <a target="blank"
+                                       href="http://wpa.qq.com/msgrd?v=1&amp;uin={$q}&amp;site={$cf['name']}&amp;menu=yes"
+                                       rel="nofollow">
+                                        <img src="__IMG__/qq05.gif" data-bd-imgshare-binded="1" border="0">
+                                        <br>&nbsp;&nbsp;{$q}</a></li>
+                                {/foreach}
+                            </ul>
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="comapnybg" align="right">公司地址：</td>
+                        <td align="left">&nbsp;{$data['address']}</td>
+                        <td class="comapnybg" align="right">电子邮件：</td>
+                        <td align="left">&nbsp;{$data['email']}</td>
+                    </tr>
+                    <tr>
+                        <td class="comapnybg" align="right">公司性质：</td>
+                        <td align="left" colspan="3">&nbsp;{$data['xz']}</td>
+                    </tr>
+                    <tr>
+                        <td class="comapnybg" align="right">友情提醒：</td>
+                        <td colspan="3" align="left">&nbsp;<span class="green">联系公司时请说明您是在{$cf['name']}上看到的招聘信息。</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- row-jg02 end -->
+    </div>
+</div>
+{include file="layout/footer" /}

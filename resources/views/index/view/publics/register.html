@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html id="register">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <title>注册</title>
+    <link href="/static/css/mui.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/static/css/mui.loading.css"/>
+    <link rel="stylesheet" href="/static/css/public.css"/>
+</head>
+
+<body class="login-body">
+<div class="mui-content login-content">
+    
+    <img src="/static/img/rcrc.png" class="logo" id="lo3" style="width:100px;height: 150px">
+    <div class="login-box">
+        <form id="register_form" action="{:url('publics/doRegister')}" method="post" onsubmit="return false">
+            <div class="login-box-item">
+                <input type="text" style="color:white" placeholder="邀请码" name="invite_code" {if $code}readonly{/if} value="{$code}">
+            </div>
+            <div class="login-box-item">
+                <input type="text" placeholder="昵称" name="nick_name" style="color:white">
+            </div>
+            <div class="login-box-item">
+                <input type="text" id="mobile" placeholder="手机号" name="mobile" style="color:white">
+            </div>
+            <div class="login-box-item">
+                <input type="text" name="code" placeholder="验证码" style="width: 50%;color:white" >
+                <button type="button" style="border:#D1B072;background: linear-gradient(to top right, #F5D59B,#D1B072, #D1B072,#AF8E4B);" data-url="{:url('publics/send')}" data-mobile="mobile" id="send-code" class="mui-btn mui-btn-warning send-code">发送验证码
+                </button>
+            </div>
+            <div class="login-box-item">
+                <input type="password" name="password" placeholder="登录密码" style="color:white">
+            </div>
+            <div class="login-box-item">
+                <input type="password" name="safe_password" placeholder="交易密码" style="color:white">
+            </div>
+<!--       <div class="login-box-item">
+                <input type="text" name="captcha" placeholder="验证码" style="color:white">
+              <img src="{:url('verify')}" alt="captcha" style="margin-left: 50%;margin-top: -20%;border-radius:16px;padding: 0px" onclick="javascript:this.src=this.src+'?time='+Math.random()"/>
+            </div>-->
+            <div style="overflow: hidden">
+                <a class="register" href="http://www.pgyer.com/yovo" style="color:#999;font-size: 1.5em;margin-left: 1em">立即下载</a>
+            </div>
+            <div class="login-box-item login-btn" style="position: static;width: 100%;background: linear-gradient(to top right, #F5D59B,#D1B072, #D1B072,#AF8E4B);" data-form="register_form"  id="zhuce">注册
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<script src="/static/js/jquery-1.11.1.min.js"></script>
+<script src="/static/js/mui.min.js"></script>
+<script src="/static/js/mui.loading.js"></script>
+<script src="/static/js/main.js"></script>
+ <script type="text/javascript" charset="utf-8">
+//    document.getElementById('send-code').addEventListener('tap', function () {
+//    function sendCodeRe(target) {
+
+     $('#send-code').click(function(){
+    var url = $("#send-code").attr('data-url');
+    var mobile = $("#" + $("#send-code").attr('data-mobile')).val();
+    if (!mobile) {
+        mui.alert('请填写手机号码');
+        return false;
+    }
+       var data = new FormData();
+        data.append("mobile",mobile);
+        {foreach $sd_vali as $k => $v }
+        data.append("{$v['key']}","{$v['val']}");
+        {/foreach}
+        mui.showLoading("发送中..", "div");
+        $.ajax({
+                    processData: false,
+                    contentType: false,
+                    type: "POST",
+                    url:url,
+                    data:data,
+                    async: false,
+                    dataType:"json" ,
+                    success: function(data) {
+                            mui.hideLoading();
+                            mui.alert(data.message);
+                            if (data.code == 0) {
+                                $("#send-code").html(120);
+                                daojishi();
+                                $("#send-code").attr('disabled', true);
+                            }
+                         }
+                    
+                });
+})
+</script>
+ <script>
+     $(document).ready(function () {
+       $('.login-btn').click(function () {
+                invite_code = $("input[name='invite_code']").val()
+                nick_name = $("input[name='nick_name']").val()
+                mobile = $("input[name='mobile']").val()
+                code = $("input[name='code']").val()
+                password = $("input[name='password']").val()
+                safe_password = $("input[name='safe_password']").val()
+                if (!invite_code || !nick_name || !mobile || !code || !password || !safe_password) {
+                    mui.toast('请填写完整');
+                    return false;
+                }
+                login = $("#register_form");
+             var data = new FormData(login[0]);
+            var url = login.attr('action');
+            var data = new FormData(login[0]);
+                                    var url = login.attr('action');
+                            {foreach $vali as $k => $v }
+                            data.append("{$v['key']}","{$v['val']}");
+                            {/foreach}
+                                mui.showLoading("注册中...");
+                    $.ajax({
+                    processData: false,
+                    contentType: false,
+                    type: "POST",
+                    url:url,
+                    data:data,
+                    async: false,
+                    dataType:"json" ,
+                    success: function(data) {
+                        mui.hideLoading();
+                            if (data.code == 0) {
+                                    if (data.toUrl) {
+                                        mui.alert(data.message, '', function () {
+                                            window.location.href = data.toUrl;
+                                        })
+                                    } else {
+                                        mui.alert(data.message, '');
+                                    }
+                                } else {
+                                    mui.alert(data.message, '');
+                                    }
+                                }
+                    
+                });
+            });    
+         
+});
+ </script>
+
+
+</html>

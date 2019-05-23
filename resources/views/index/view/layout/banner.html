@@ -1,0 +1,40 @@
+<div class="header fix  wow fadeInDown">
+    <span class="menuBtn"></span>
+    <div class="wp">
+        <div class="logo">
+            <a href="/"><img src="{$cf['logo']}" alt=""/></a>
+        </div>
+        <ul class="nav fix">
+            <li class="{if $bs == '首页'} on {/if} animated fadeInLeft">
+                <a href="/" class="v1"><span>首页</span></a>
+            </li>
+            <li class=" {if $bs == '证书展示'} on {/if} animated fadeInLeft delay1">
+                <a href="{:url('certificate')}" class="v1"><span>证书展示</span></a>
+            </li>
+            </a></li>
+            <li class="{if $bs == '培训课程'} on {/if} animated fadeInLeft delay2">
+                <a href="{:url('train')}" class="v1"><span>培训课程</span></a>
+            </li>
+            </a></li>
+            <li class="{if $bs == '学员生活'} on {/if} animated fadeInLeft delay3">
+                <a href="{:url('life')}" class="v1"><span>学员生活</span></a>
+            </li>
+            </a></li>
+            <li class="{if $bs == '船队介绍'} on {/if} animated fadeInLeft delay4">
+                <a href="{:url('fleet')}" class="v1"><span>船队介绍</span></a>
+            </li>
+            </a></li>
+            <li class="{if $bs == '新闻动态'} on {/if} animated fadeInLeft delay5">
+                <a href="{:url('news')}" class="v1"><span>新闻动态</span></a>
+            </li>
+            </a></li>
+
+            <li class="{if $bs == '关于我们'} on {/if} animated fadeInLeft delay6">
+                <a href="{:url('about')}" class="v1"><span>关于我们</span></a>
+            </li>
+            </a></li>
+
+
+        </ul>
+    </div>
+</div>    <!-- banner -->

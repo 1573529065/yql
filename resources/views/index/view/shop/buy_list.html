@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>买入订单</title>
+    {include file="layout/head" /}
+</head>
+<body>
+<header class="mui-bar mui-bar-nav my-header">
+    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" href="{:url('member/index')}"></a>
+
+    <h1 id="title" class="mui-title">余额交易</h1>
+</header>
+
+<div style="top: 44px;z-index: 50;"
+     class="mui-segmented-control mui-segmented-control-inverted mui-segmented-control-primary my-tabs">
+    <a class="mui-control-item mui-active">
+        买入
+    </a>
+    <a class="mui-control-item" href="{:url('shop/sale_list')}">
+        卖出
+    </a>
+    <a class="mui-control-item" href="{:url('shop/trade_list')}">
+        交易中
+    </a>
+    <a class="mui-control-item" href="{:url('shop/complete_list')}">
+        已完成
+    </a>
+</div>
+<div class="mui-content">
+    <div class="mui-scroll-wrapper">
+        <div class="mui-scroll">
+            <div class="mui-table-view my-list" style="top: 85px;">
+                {if !empty($list) }
+                <ul class="my-list-item">
+                    <li class="clear">
+                        <span class="left">
+                            <span>编号:</span>
+                            <span class="value">{$list->id}</span>
+                        </span>
+                    </li>
+                    <li class="clear">
+                        <span class="left">
+                            <span>数量：</span>
+                            <span class="value">{$list->number} 余额</span>
+                        </span>
+                    </li>
+                    <li class="clear">
+                        <span class="left">
+                            <span>实付金额：</span>
+                            <span class="value">￥{$list->total_price_china} </span>
+                        </span>
+                    </li>
+                    <li class="clear">
+                        <span class="left">
+                            <span>时间:</span>
+                            <span class="value">{$list->create_time}</span>
+                        </span>
+                    </li>
+                </ul>
+                <button class="mui-btn-block my-btn-block" data-id="{$list->id}" onclick="cancelOrder(this)">取消交易
+                </button>
+                {else /}
+                    <div>
+                        <img class="noneview" src="/static/img/noneview.png">
+                    </div>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+{include file="layout/footer" /}
+<script>
+    function cancelOrder(target) {
+        var id = $(target).attr('data-id');
+        var $this = $(target);
+        mui.confirm('你确定要取消吗', '', ['关闭', '确定'], function (e) {
+            if (e.index) {
+                mui.showLoading("处理中..", "div");
+                $this.attr('disabled', true);
+                $.post("{:url('shop/yue_order_del')}", {type:'buy',id: id}, function (data) {
+                    mui.hideLoading();
+                    $this.attr('disabled', false);
+                    if(data.code == 200){
+                        mui.alert(data.msg, '', function () {
+                            window.location.reload();
+                        })
+                    }else {
+                        mui.alert(data.msg)
+                    }
+                }, 'json')
+            }
+        })
+    }
+</script>
+</html>

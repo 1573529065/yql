@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>客服</title>
+        {include file="layout/head" /}
+    </head>
+
+    <style type="text/css">
+        .cont {
+            background: white;
+            height: auto;
+        }
+
+        .ter {
+            background: white;
+            height: auto;
+        }
+    </style>
+    <body>
+        <header class="mui-bar mui-bar-nav my-header" style="background-color:#3D9ED0 ">
+            <a href="/index/member/index" class="mui-icon mui-icon-left-nav mui-pull-left"
+               ></a>
+            <h1 id="title" class="mui-title">客服</h1>
+        </header>
+        <div class="mui-content cont" >
+            <p style="padding: 10px;background: #f7f7f7">问题留言</p>
+            <form action="{:url('member/submitMsg')}" style="height: 170px;padding: 0" method="post" onsubmit="return false" id="submitForm">
+                <textarea style="color:grey;border: none;height: 100px" name="content" id="content" placeholder="请您输入您的问题，我们将尽快回复您"></textarea>
+                <div class="white-box mui-row" style="padding: 10px">
+                    <div class="mui-col-xs-3 mui-col-sm-3" style="line-height: 200px">
+                        凭证
+                    </div>
+                    <div class="mui-col-xs-9 mui-col-sm-9">
+                        <img data-preview-src="" data-preview-group="1" id="order-image"
+                             style="width: 60%;max-height: 200px;border: 1px solid #ddd" src="">
+                    </div>
+                </div>
+
+                <div class=" mui-row" style="padding: 10px">
+                    <button type="button" onclick="selectFile()" id="order-btn" class="mui-btn mui-btn-success mui-btn-outlined">
+                        上传
+                    </button>
+                    <input type="hidden" name="img" id="img">
+                    <input type="file" id="image_file" data-url="{:url('member/upImg')}"
+                           style="display: none" onchange="uploadImage(this)">
+                    <button data-form="submitForm" onclick="ajaxPost(this)" type="submit"
+                            style="width: 25%;height: 30px;border: none;background: #ffd21f;float: right;margin-right: 10px">提交
+                    </button>
+            </form>
+            {foreach $list as $list}
+            <div style="text-align: center;color: gray;background: #f7f7f7;padding: 10px">
+                {$list->getCreateTime()}
+            </div>
+            <div class="mui-table-view">
+                <div>
+                    <a href="javascript:;">
+                        {if $list->avatar}
+                        <img class="mui-media-object mui-pull-left" src="{$list->avatar}" style="width: 20%;">
+                        {else /}
+                        <img class="mui-media-object mui-pull-left" src="/static/img/denglu.png" style="width: 20%;">
+                        {/if}
+                     
+                        <div class="mui-media-body" style="color: #8f8f94;margin-top: 2px;">
+                            {$list->nick_name}
+                            <p style="margin-top: 5px;word-break:normal;white-space:pre-warp;">
+                                {$list->content}
+                                {if $list->img}
+                                <img class="mui-media-object mui-pull-left" src="{$list->img}" style="width: 20%;">
+                                {/if}
+                            </p>
+                        </div>
+                        {if $list->remark}
+                         <div class="mui-media-body" style="color: #8f8f94;margin-top: 2px;">
+                           客服回复：<br>
+                            <p style="margin-top: 5px;word-break:normal;white-space:pre-warp;">
+                            {$list->remark}
+                             </p>
+                        </div>
+                        {/if}
+                    </a>
+                </div>
+            </div>
+            {/foreach}
+        </div>
+
+        {include file="layout/footer" /}
+    </body>
+    <script>
+
+        function selectFile() {
+            $("#image_file").click();
+        }
+
+        function uploadImage(target) {
+            var $this = $(target);
+            var url = $this.attr('data-url');
+            var file = target.files[0];
+            if (file.length == 0) {
+                mui.alert('请选择需要上传的图片');
+                return false;
+            }
+            var data = new FormData();
+            data.append('image', file);
+            mui.showLoading('上传中...', 'div')
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: data,
+                processData: false, // 告诉jQuery不要去处理发送的数据
+                contentType: false, // 告诉jQuery不要去设置Content-Type请求头
+                dataType: 'json',
+                success: function (response) {
+                    mui.hideLoading()
+                    if (response.code == 200) {
+                        $("#order-image").attr('src', response.msg);
+                        $('#img').val(response.msg);
+                        $this.next().show();
+                        $('#order-btn').html('重新上传')
+                    } else {
+                        mui.alert(response.msg);
+                    }
+                }
+            })
+        }
+    </script>
+</html>

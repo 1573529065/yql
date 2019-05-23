@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>产品</title>
+    <!--head-->
+    {include file="layout/head" /}
+</head>
+<body>
+<!--<header class="mui-bar mui-bar-nav  my-header">
+    <h1 id="title" class="mui-title">流量魔盒</h1>
+</header>-->
+<div class="mui-content" style="padding-bottom: 100px">
+    <div class="white-box mui-row product-top">
+        <div class="mui-col-xs-4 mui-col-xs-4 text">
+            当前采矿算力
+        </div>
+        <div id="rand-value" class="mui-col-xs-4 mui-col-xs-4 product-img">
+            789
+        </div>
+        <div class="mui-col-xs-4 mui-col-xs-4 text">
+            kb/s
+        </div>
+    </div>
+    <p style="padding: 20px">
+        云矿机：通过数据互联模拟真实矿机，基于智能终端，通过大型云服务器计算产生算力，结合哈希算法产出RCRC币！
+    </p>
+
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            {foreach $list as $list}
+            <div class="swiper-slide product-list">
+                <div class="product-item white-box left" style="margin-left: 18%;">
+                    <img class="product-img" src="{$list->image_url}" style="width: 80%;height: 100px">
+                    <h4 class="text-center product-name">茅仙酒</h4>
+                    <h4 class="text-center product-name" style="color:#DDBD80;">{$list->price}CNY</h4>
+                     <hr style="width: 80%;margin-left:10%;background-color:lightgrey">
+                     <h5 class="text-center product-name" style="color:black">服务</h5>
+                     <p class="text-center">买酒赠送{$list->product_name}</p>
+                     <h5 class="text-center product-name" style="color:black">RCRC矿机价值</h5>
+                    <p class="text-center">开采率：{:number_format($list->rate_min,2)}kb/s-{:number_format($list->rate_max,2)}kb/s</p>
+                    <p class="text-center">24小时产量：{:number_format($list->yield_min_display,2)}-{:number_format($list->yield_max_display,2)}</p>
+                    <p class="text-center">运行周期：{$list->period} 天</p>
+                    <!-- <p class="text-center">能源发生器价格：{$list->price}能量</p> -->
+                    <!-- <p class="text-center">宝石价格：{$list->jewel_price}宝石</p> -->
+                    <div class="mui-row product-price">
+                        <!-- <div class="mui-col-xs-6 mui-col-sm-6" did="{$list->id}" onclick="buy(this, 2)">{$list->price}能量</div> -->
+                        <!--<div class="mui-col-xs-6 mui-col-sm-6" did="{$list->id}" style="background-color: #17F4DF">{$list->price}RCRT</div>-->
+                        <div class="mui-col-xs-6 mui-col-sm-6" did="{$list->id}" onclick="buy(this, 1)" style="background-color: #ECCC91;border-radius:25px;margin-left: 25%">购买</div>
+                    </div>
+                </div>
+            </div>
+            {/foreach}
+        </div>
+    </div>
+  
+    <!--<div class="product-list">
+        <div class="product-item white-box left">
+            <img class="product-img" src="img/mh1.png">
+            <h4 class="text-center product-name">迷你魔盒</h4>
+            <p class="text-center">魔石开采率：0.01kb/s-0.011kb/s</p>
+            <p class="text-center">24小时产量：0.01kb/s-0.011kb/s</p>
+            <p class="text-center">电池周期：25 天</p>
+            <div class="mui-row product-price">
+                <div class="mui-col-xs-6 mui-col-sm-6">10魔石</div>
+                <div class="mui-col-xs-6 mui-col-sm-6">购买</div>
+            </div>
+        </div>
+        <div class="product-item white-box left">
+            <img class="product-img" src="img/mh1.png">
+            <h4 class="text-center product-name">迷你魔盒</h4>
+            <p class="text-center">魔石开采率：0.01kb/s-0.011kb/s</p>
+            <p class="text-center">24小时产量：0.01kb/s-0.011kb/s</p>
+            <p class="text-center">电池周期：25 天</p>
+            <div class="mui-row product-price">
+                <div class="mui-col-xs-6 mui-col-sm-6">10魔石</div>
+                <div class="mui-col-xs-6 mui-col-sm-6">购买</div>
+            </div>
+        </div>
+        <div class="product-item white-box left">
+            <img class="product-img" src="img/mh1.png">
+            <h4 class="text-center product-name">迷你魔盒</h4>
+            <p class="text-center">魔石开采率：0.01kb/s-0.011kb/s</p>
+            <p class="text-center">24小时产量：0.01kb/s-0.011kb/s</p>
+            <p class="text-center">电池周期：25 天</p>
+            <div class="mui-row product-price">
+                <div class="mui-col-xs-6 mui-col-sm-6">10魔石</div>
+                <div class="mui-col-xs-6 mui-col-sm-6">购买</div>
+            </div>
+        </div>
+        <div class="product-item white-box left">
+            <img class="product-img" src="img/mh1.png">
+            <h4 class="text-center product-name">迷你魔盒</h4>
+            <p class="text-center">魔石开采率：0.01kb/s-0.011kb/s</p>
+            <p class="text-center">24小时产量：0.01kb/s-0.011kb/s</p>
+            <p class="text-center">电池周期：25 天</p>
+            <div class="mui-row product-price">
+                <div class="mui-col-xs-6 mui-col-sm-6">10魔石</div>
+                <div class="mui-col-xs-6 mui-col-sm-6">购买</div>
+            </div>
+        </div>
+    </div>-->
+</div>
+{include file="layout/nav" /}
+</body>
+
+{include file="layout/footer" /}
+<script>
+    var swiper = new Swiper('.swiper-container', {
+         pagination: {
+        el: '.swiper-pagination',
+        dynamicBullets: true,
+        },
+        slidesPerView: 1.2,
+        spaceBetween: 0,
+//        centeredSlides: true,
+        speed: 500,
+        paginationClickable: true,
+        loop:true,
+    });
+    function buy(e, type)
+    {
+        mui.showLoading("请稍等....");
+        var product_id = $(e).attr("did");
+        $.ajax({
+            url:"/index/product/buy",
+            type:'post',
+            dataType:'json',
+            data:{'product_id' : product_id, 'type' : type},
+            success:function(data){
+                mui.hideLoading();
+                mui.alert(data.message);
+            }
+        })
+    }
+
+    setInterval(function(){
+        var n2= Math.floor(1000*Math.random())
+        $("#rand-value").html(n2)
+    },2000)
+</script>
+</html>

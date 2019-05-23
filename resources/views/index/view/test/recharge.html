@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html id="change-password">
+
+    <head>
+        <meta charset="utf-8">
+        <title>充值</title>
+        {include file="layout/head" /}
+    </head>
+
+    <body class="login-body">
+        <header class="mui-bar mui-bar-nav my-header" style="background-color: #2A2A2A">
+            <a href="/index/index/index" class="mui-icon mui-icon-left-nav mui-pull-left" style="color: white"></a>
+            <h1 class="mui-title" style="color:white">充值</h1>
+            <a href="/index/index/recharge_log" class="mui-pull-right mui-icon" style="color:white;font-size:15px;top:15%">充值记录</a>
+        </header>
+        <div class="mui-content container">
+            <div class="mui-input-row my-input-row" style="background-color: #FFFFFF">
+                <label>充值金额：</label>
+                <input type="text" class="mui-input-text" placeholder="请输入充值金额数量"
+                       name="num" id="num">
+            </div>
+              <div class="mui-input-row my-input-row" style="background-color: #FFFFFF">
+                <label>充值方式：</label>
+                <select name="type" id="type">
+                    <option value="1">
+                        银联快捷支付
+                    </option>
+                </select>
+            </div>
+            <div class="mui-input-row my-input-row" style="background-color: #FFFFFF">
+                <label>银行卡账号：</label>
+                <input type="text" class="mui-input-text" placeholder="请输入银行卡账号"
+                       name="bank" id="bank">
+            </div>
+<!--             <div class="mui-input-row my-input-row" style="background-color: #FFFFFF">
+                <label>转账订单号：</label>
+                <input type="text" class="mui-input-text" placeholder="请输入转账订单号"
+                       name="number" id='number'>
+            </div>-->
+        <!--<div class="mui-input-row my-input-row">
+                <label style="width:50%">支付宝扫码付款：</label>
+                <label style="width:50%">微信扫码付款：</label>
+            </div>
+            <div class="mui-input-row my-input-row">
+                <img src="{$list.zfb}" data-preview-src="" data-preview-group="1" style="width:45%;margin-right: 5%">
+                <img src="{$list.wx}" data-preview-src="" data-preview-group="1" style="width:45%">
+            </div>
+             <div class="mui-input-row my-input-row" style="background-color: #FFFFFF">
+                <label style="width:100%">银行卡转账付款：</label>
+                <label style="width:40%">收款银行名称：</label>
+                <input type="text" value="{$list.xh_name}" class="mui-input-text" style="width:60%">
+                <label style="width:40%">收款银行卡号：</label>
+                <input type="text" value="{$list.xh_kh}" class="mui-input-text" style="width:60%">
+                <label style="width:40%">收款人姓名：</label>
+                <input type="text" value="{$list.name}" class="mui-input-text" style="width:60%">
+            </div>-->
+            
+<!--       <input type="file" id="image_file" data-id=""
+                           style="display: none" onchange="uploadImage(this)" name="image">
+       <div class="white-box mui-row" style="padding: 10px">
+            <div class="mui-col-xs-3 mui-col-sm-3" style="line-height: 150px">
+                转账截图
+            </div>
+            <div class="mui-col-xs-9 mui-col-sm-9">
+                <img data-preview-src="" data-preview-group="1" id="order-image"
+                     style="width: 60%;max-height: 200px;border: 1px solid #ddd" src="">
+            </div>
+        </div>
+            <button type="button" onclick="selectFile(this)" class="mui-btn mui-btn-success mui-btn-outlined">
+                上传凭据
+            </button>-->
+            <div class="mui-input-row my-input-row">
+                <label style="width:100%">充值提示：</label>
+                <span style="color:lightslategray;margin-left: 3%">
+                    1.充值数量为{$min}。
+                </span>
+                <br>
+                <span style="color:lightslategray;margin-left: 3%">
+                    3.充值的金额只能购买不同类型的矿机，多余金额无法提现
+                </span>
+            </div>
+            
+            <div class="mui-input-row my-input-row">
+                <button type="button" class="mui-btn mui-btn-primary" style="width: 100%;background-color: #EBCB8F;border: 0;border-radius: 25px" id="next">
+                充值
+                </button>
+            </div>
+            
+        </div>
+        {include file="layout/footer" /}
+    </body>
+    <script>
+        mui.init();
+        function selectFile() {
+        $("#image_file").click();
+        }
+        function uploadImage(target) {
+        var file = target.files[0];
+        var imgUrl =window.URL.createObjectURL(file);
+        if (file.length == 0) {
+            mui.alert('请选择需要上传的图片');
+            return false;
+        }
+        $('#order-image').attr('src',imgUrl);
+        $('.mui-btn-outlined').html('重新上传');
+    }
+        $('#next').click(function () {
+            num = $('#num').val();
+            type= $('#type').val();
+            bank = $('#bank').val();
+            var data = new FormData();
+            data.append('num', num);
+            data.append('bank', bank);
+            data.append('type', type);
+            $(this).attr('disabled', true);
+            $.ajax({
+                url: "{:url('test/recharge')}",
+                type: "post",
+                data: data,
+                processData:false,
+                contentType:false,
+                dataType: 'json',
+                success: function (data) {
+                    $('#next').attr('disabled', false);
+                   
+                    
+                    if (data.code == 200) {
+                         window.location.href=data.msg;      
+//                          mui.alert(data.msg, '', function () {
+//                         window.location.href='/index/index/recharge_log';      
+//                        })
+                    } else {
+                        $('#next').attr('disabled', false);
+                        mui.alert(data.msg);
+                    }
+                }
+            })
+        });
+
+
+    </script>
+</html>

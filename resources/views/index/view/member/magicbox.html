@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>我的矿机</title>
+	    <!--head-->
+	    {include file="layout/head" /}
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav  my-header" style="background-color: #2A2A2A">
+			<a href="/index/member/index" class="mui-icon mui-icon-left-nav mui-pull-left" style="color: white;"></a>
+                        <h1 id="title" class="mui-title" style="color:white">矿机</h1>
+		</header>
+		<div class="mui-content">
+			{foreach $magicList as $list}
+			<div class="mohe-list">
+				<div class="mohe-list-img">
+					<img src="{$list->image_url}">
+				</div>
+				<div class="mohe-list-content">
+					<p><span>名称:</span><span>{$list->product_name}</span></p>
+					<p><span>价格:</span><span>{$list->price}</span></p>
+					<p><span>周期:</span><span>{$list->period}天</span></p>
+					<p><span>开采率:</span><span>{:number_format($list->rate_min, 3)}kb/s-{:number_format($list->rate_max, 3)}kb/s</span></p>
+					<p><span>日产量:</span><span>{$list->yield_min_display}-{$list->yield_max_display}RCRC</span></p>
+					<p><span>购买时间:</span><span>{$list->getBuyTime()}</span></p>
+					<p><span>状态:</span><span>{if $list->status == 1}运行中{else /}已过期{/if}</span></p>
+                                        <p><a href="javascript:;" onclick="sj('{$list->up_id}')">升级</a></p>
+				</div>
+			</div>
+			{/foreach}
+		</div>
+	</body>
+	{include file="layout/footer" /}
+        <script>
+        mui.init();
+        function sj(id){
+             mui.confirm("确定升级?", '', ['取消', '确定'], function (e) {
+                 if(e.index == 1){
+                    mui.showLoading("正在升级");
+                    $.ajax({
+                            url:"{:url('upgrade')}",
+                            type:"post",
+                            data:{id : id},
+                            dataType:'json',
+                            success:function(data){
+                                     mui.hideLoading();
+                                     mui.alert(data.msg);
+                                     if(data.code == 200){
+                                         window.location.reload();
+                                     }
+                            }
+                    })
+                 }
+          });
+        }
+          
+        </script>
+</html>

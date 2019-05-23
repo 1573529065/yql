@@ -1,0 +1,211 @@
+<html id="change-password" style="height: 150%">
+
+    <head>
+        <meta charset="utf-8" style="max-height:100%">
+        <title>RCRC商城-{$list.name}</title>
+        {include file="layout/head" /}
+    </head>
+    <style>
+        .mui-amount-increase {
+            width: 16px;
+            height: 12px;
+            overflow: hidden;
+            border: 1px solid #a7a6ab;
+            display: block;
+            font-family: tm-detail-font;
+            line-height: 12px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .mui-search .mui-placeholder {
+            pointer-events: none;
+        }
+    </style>
+    <body class="login-body">
+        <header class="mui-bar mui-bar-nav my-header" style="background-color: #2A2A2A">
+            <a href="javascript:;javascript:history.back(-1);" class="mui-icon mui-icon-left-nav mui-pull-left" style="color: white;"></a>
+            <h1 class="mui-title" style="color:white">{$list.name}</h1>
+        </header>
+        <div class="mui-content container">
+              <div id="slider" class="mui-slider" style="height:30%;width: 100%">
+                <div class="mui-slider-group mui-slider-loop">
+                    <!-- 额外增加的一个节点(循环轮播：第一个节点是最后一张轮播) -->
+                    <div class="mui-slider-item mui-slider-item-duplicate">
+                            <!--<img src="{$list.img2}" style="height:100%;width: 100%">-->
+                    </div>
+                    
+                    <!-- 第一张 -->
+                    <div class="mui-slider-item">
+                            <img src="{$list.img}" data-preview-src="" data-preview-group="1" style="height:100%;width: 100%">
+                    </div>
+                    <!-- 第二张 -->
+                    <div class="mui-slider-item">
+                            <img src="{$list.img1}" data-preview-src="" data-preview-group="1" style="height:100%;width: 100%">
+                    </div>
+                    <!-- 第三张 -->
+                    <div class="mui-slider-item">
+                            <img src="{$list.img2}" data-preview-src="" data-preview-group="1" style="height:100%;width: 100%">
+                    </div>
+                    <!-- 额外增加的一个节点(循环轮播：最后一个节点是第一张轮播) -->
+                    <div class="mui-slider-item mui-slider-item-duplicate">
+                            <img src="{$list.img}" style="height:100%;width: 100%">
+                    </div>
+                </div>
+                <div class="mui-slider-indicator">
+                    <div class="mui-indicator mui-active"></div>
+                     <div class="mui-indicator"></div>
+                    <div class="mui-indicator"></div>
+                </div>
+            </div>
+            <!--<img src="{$list.img}" width="100%" height="45%" style="transform:scale(1);">-->
+            <div class="hui-img-list-content" style="text-align:center">
+                <h4>{$list.name}</h4>
+                <!--<p>销量：54</p>-->
+                <span style="margin-right:20%">CNY：{$list.price}</span>
+                <span>RCRC：{$list.price_xuni}</span>|
+                <!--  <p>余额：{$list.yue_price}</p>
+                <p>库存：{$list.stock}</p>--><span style="color: red">
+                    {if $list.is_back == 1} 
+                    返算力
+                    {else /} 不返{/if}</span>
+            </div>
+            <div class="mui-input-row my-input-row">
+                <label>支付方式：</label>
+                <select id="mode">
+                    <option value="3">商城RCRC</option>
+                    <option value="1">RCRC</option>
+                    <!--<option value="2">余额</option>-->
+                </select>
+            </div>
+           
+            <div style="margin:5px">
+                <label>&nbsp;&nbsp;&nbsp;购买数量：</label>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" class="mui-btn mui-btn-outlined" id="jia">+</button>
+                <input type="text" style="width:25%;height: 35px" value="1" name="num">
+                <button type="button" class="mui-btn mui-btn-outlined" id="jian">-</button>
+            </div>
+            <div class="mui-input-row my-input-row">
+            <label>商品详情：</label>
+              <li class="mui-table-view-cell mui-active" style="list-style:none;max-width: 60%">
+                    <!--<a class="mui-navigate-right" href="#">111111111</a>-->
+                    <div class="mui-collapse-content" id="content">
+                        
+                    </div>
+                </li>
+             </div>
+            <div class="mui-input-row my-input-row">
+                <button type="button" class="mui-btn" style="width: 100%;font-size:25px;background-color: #CFAE6F" id="goumai">立即购买</button>
+            </div>
+        </div>
+        
+        {include file="layout/footer" /}
+    </body>
+    <script>
+        mui.init();
+        $('$content').html("{:htmlspecialchars_decode($list->remark)}");
+        $('#jia').click(function(){
+        num = $("input[name='num']").val();
+        num++;
+        if (num > {$list.stock}){
+        mui.toast("购买数量过大！");
+        return;
+        }
+        $("input[name='num']").val(num);
+        })
+                $('#jian').click(function(){
+        num = $("input[name='num']").val();
+        num--;
+        if (num < 1){
+        mui.toast("数量过小！");
+        return;
+        }
+        $("input[name='num']").val(num);
+        })
+       $(function(){
+           
+       
+       $('#goumai').click(function(){
+        num = $("input[name='num']").val();
+        var order = $('#order').val();
+        a_name = $("#order").find("option:selected").attr("data-name");
+        a_mobile = $("#order").find("option:selected").attr("data-mobile");
+        address = $('#order').find("option:selected").text();
+        if (num <= 0){
+        $("input[name='num']").val('1');
+        mui.toast("购买数量过小！");
+        return;
+        }
+
+        if (num > {$list.stock}){
+        $("input[name='num']").val("{$list.stock}");
+        mui.toast("购买数量过大！");
+        return;
+        }
+        mode = $('#mode').val();
+        if (mode == 2){
+        price = num * {$list.yue_price};
+        pudg = (price * {$pudg} * num).toFixed(2);
+        model_name = "余额";
+        if ({$info['yue']} < (Number(price) + Number(pudg))){
+        mui.toast("余额不足，请及时充值！");
+        return;
+        }
+        } else if(mode == 1) {
+        price = num * {$list.price_xuni};
+        pudg = (price * {$pudg} * num).toFixed(2);
+        model_name = "RCRC";
+        if ({$info['magic']} < (Number(price) + Number(pudg))){
+        mui.toast("RCRC不足，请及时充值！");
+        return;
+        }
+        }else if(mode == 3){
+            price = num * {$list.price_xuni};
+            pudg = (price * {$pudg} * num).toFixed(2);
+            model_name = "商城RCRC";
+            if ({$info['magic']} < (Number(price) + Number(pudg))){
+            mui.toast("商城RCRC不足，请及时充值！");
+            return;
+            }
+        }
+        mui.confirm('是否花费' + price + model_name + '和手续费' + pudg, '', ['否', '是'], function(e) {
+        if (e.index == 0) {
+        return;
+        }
+        mui.prompt('', '请输入交易密码', '请输入交易密码', ['取消', '确定'], function (ei) {
+        if (ei.index == 0){
+        mui.toast('交易取消！');
+        return;
+        }
+        mui.showLoading("购买中...", "div");
+       
+        $.post("{:url('shop/add_detail')}", {psw: ei.value,id: {$list.id}, num:num, mode:mode}, function (res) {
+        mui.hideLoading();
+        if (res.code == 200){
+        mui.confirm(res.msg, '', ['取消', '去查看'], function(es) {
+        if (es.index == 1){
+            window.location.href = "{:url('shop/order_list')}";
+//        mui.openWindow({
+//        url: "{:url('shop/order_list')}", //通过URL传参
+//                id: 'order_list.html'
+//        });
+        }
+        })
+        } else{
+        mui.alert(res.msg);
+        }
+
+
+        })
+
+           
+        },'div')
+           document.querySelector('.mui-popup-input input').type = 'password';  
+        })
+         
+
+        })
+        
+        })
+    </script>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html id="change-password">
+
+    <head>
+        <meta charset="utf-8">
+        <title>余额转出</title>
+        {include file="layout/head" /}
+    </head>
+
+    <body class="login-body">
+        <header class="mui-bar mui-bar-nav my-header" style="background-color: #2A2A2A">
+            <a href="/index/index/index" class="mui-icon mui-icon-left-nav mui-pull-left" style="color:white"></a>
+
+            <h1 class="mui-title" style="color:white">转出</h1>
+            <a href="/index/member/out_log?type=1" class="mui-pull-right mui-icon" style="color:white;font-size:15px;top:15%">转出记录</a>
+        </header>
+        <div class="mui-content container">
+            <div class="mui-input-row my-input-row">
+                <label>对方账户：</label>
+                <input type="text" onsubmit="return false" class="mui-input-text" placeholder="请输入昵称"
+                       name="mobile">
+            </div>
+            <div class="mui-input-row my-input-row">
+                <button type="button" class="mui-btn mui-btn-primary" style="width: 100%" id="next">下一步</button>
+            </div>
+        </div>
+        {include file="layout/footer" /}
+    </body>
+    <script>
+        mui.init();
+        $('#next').click(function () {
+            mobile = $('.mui-input-text').val();
+            if (mobile == '') {
+                mui.toast("非法输入！");
+                return;
+            }
+
+            $(this).attr('disabled', true);
+            $.ajax({
+                url: "{:url('member/next_yue')}",
+                type: "post",
+                data: {mobile: mobile},
+                //        processData:false,
+                //        contentType:false,
+                dataType: 'json',
+                success: function (data) {
+                     $('#next').attr('disabled', false);
+                    if (data.code == 200) {
+                         window.location.href ="./out_detail?id=" + data.msg.id;
+                    } else {
+                        $('#next').attr('disabled', false);
+                        mui.alert(data.msg);
+                    }
+                }
+            })
+        });
+
+
+    </script>
+</html>

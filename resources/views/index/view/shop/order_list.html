@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>我的订单</title>
+        <!--head-->
+        {include file="layout/head" /}
+        <style>
+            .trade-btn {
+                background: #ffce1b;
+                color: #fff;
+                padding: 1px;
+                border: 1px solid #ffce1b;
+                margin: 0;
+            }
+            .pagination{
+                list-style:none;
+            }
+            .pagination li {  float:left;margin: 2%}
+        </style>
+    </head>
+    <body>
+        <header class="mui-bar mui-bar-nav  my-header" style="background-color: #2A2A2A">
+            <a href="/index/member/index" class="mui-icon mui-icon-left-nav mui-pull-left" style="color: white;"></a>
+            <h1 id="title" class="mui-title" style="color: white;">我的订单</h1>
+        </header>
+        <div class="mui-content">
+            {if count($list) > 0}
+            {foreach $list as $vo}
+            <div class="mohe-list">
+                <a data-id="{$vo.sid}" href="javascript:;" class='detail'>
+                    <div class="mohe-list-img">
+                        <img src="{$vo.img}" alt="暂无">
+                    </div>
+                </a>
+                <div class="mohe-list-content">
+                    <p><span>名称:</span><span>{$vo.name}</span></p>
+                    <p><span>价格:</span><span>{$vo.shop_price}</span></p>
+                    <p><span>数量:</span><span>{$vo.num}</span></p>
+                    <p><span>支付方式:</span><span>
+                            {$vo->getPayment($vo['payment_type'])}
+                        </span></p>
+                    <p><span>状态:</span>{if $vo['status'] == 1}<span>未发货{elseif $vo['status'] == 2 /}<span style="color:green">已发货{else /} <span style="color:red">已收货 {/if}</span></p>
+                                <p><span>购买时间:</span><span>{$vo.add_time}</span></p>
+                                <p><span>发货时间:</span><span><?php if($vo['send_time'] != "0000-00-00 00:00:00"){ ?> {$vo.send_time} <?php }?></span></p>
+                                <p><span>收货时间:</span><span><?php if($vo['collect_time'] != "0000-00-00 00:00:00"){ ?> {$vo.send_time} <?php }?></span></p>
+                                <p><span>发货单号:{$vo.numbers}</span><span></span></p>
+                                <p><span>收货人:{$vo.name}</span><span></span></p>
+                                <p><span>收货手机号:{$vo.mobile}</span><span></span></p>
+                                </div>
+                                <p style="text-align:center"><span class="left">收货地址：{$vo.address}</span>
+                                    {if $vo.status == 2}
+                                    <span class="right">
+                                        <a class="trade-btn" data-id="{$vo['id']}" href="javascript:;">确认收货</a>
+                                    </span>
+                                    {/if}
+                                </p>
+                                </div>
+                                {/foreach}
+                                </div>
+                                {else /}
+                                <div>
+                                    <img class="noneview" src="/static/img/noneview.png">
+                                </div>
+                                {/if}
+                                <div style="width:100%;text-align: center">
+                                    {:$list->render()}
+                                </div>
+                                </body>
+                                {include file="layout/footer" /}
+                                <script>
+                                    mui.init();
+                                    $('.detail').click(function () {
+                                        id = $(this).attr('data-id');
+                                        window.location.href= "./detail" + '?id=' + id;
+//                                        mui.openWindow({
+//                                            url: "{:url('detail')}" + '?id=' + id,
+//                                            id: 'detail',
+//                                        });
+                                    })
+
+                                    $(".trade-btn").click(function () {
+                                        id = $(this).attr('data-id');
+                                        if(!id){
+                                            return false;
+                                        }
+                                        mui.showLoading("确认收货中...",'div');
+                                        $.post("{:url('collect_goods')}", {id: id}, function (data) {
+                                            mui.hideLoading();
+                                            if (data.code == 200) {
+                                                mui.alert(data.msg, function () {
+                                                    window.location.reload();
+                                                });
+                                            } else {
+                                                mui.alert(data.msg)
+                                            }
+
+                                        }, 'json')
+
+
+                                    })
+                                </script>
+
+
+                                </html>

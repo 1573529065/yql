@@ -1,0 +1,204 @@
+body{
+	background: #f7f7f7;
+}
+::-webkit-input-placeholder { /* WebKit browsers */
+    color:    #aaa;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    #aaa;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    #aaa;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:    #aaa;
+}
+ul li{
+	list-style: none;
+}
+#login{
+	height: 100%;
+}
+#login .login-body{
+	height: 100%;
+}
+.container{
+	background: none;
+	height: 100%;
+	left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    overflow: hidden;
+}
+.login-content{
+	height: 100%;
+	left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    overflow: hidden;
+    background: url(../img/bg.png);
+    background-size: cover;
+}
+.login-content .logo{
+	display: block;
+	margin: 3em auto;
+	width: 50%;
+}
+.login-box{
+	width: 80%;
+	margin: 9em auto;
+}
+.login-box-item{
+	border: 1px solid #aaa;
+	border-radius: 2em;
+	padding: .3em 1em;
+	overflow: hidden;
+	margin-bottom: 1em;
+}
+#login .login-box .icon{
+	width: 2em;
+	float: left;
+}
+#login .login-box-item input{
+	padding: 10px;
+    width: calc(100% - 2em);
+    float: left;
+    border: none;
+    margin-bottom: 0;
+    float: left;
+    background: none;
+}
+.login-btn{
+	text-align: center;
+	padding: .8em 2em;
+	background: #ffce1b;
+	border: none;
+	color: #fff;
+	margin-top: 7em;
+}
+#register .login-btn{
+	margin-top: 2em;
+	height: 44px;
+	line-height: 44px;
+}
+#register .login-box-item{
+	padding: .1em .5em;
+}
+#register .login-box-item input{
+	float: left;
+    border: none;
+    margin-bottom: 0;
+    float: left;
+    background: none;
+}
+#login .find-password{
+	color: #999;
+    font-size: .8em;
+    margin-left: 1em;
+    float: left;
+}
+#login .register{
+	color: #999;
+    font-size: .8em;
+    margin-right: 1em;
+    float: right;
+}
+.my-header{
+	background: #ffce1b;
+	-webkit-box-shadow: none;
+    box-shadow: none;
+    -webkit-box-shadow: none; 
+    box-shadow: none; 
+}
+.my-header .mui-icon{
+	color: #000;
+}
+.mui-input-group{
+	background: none;
+}
+.mui-input-group .my-input-row{
+	margin-top: 10px;
+	background: #fff;
+	height: 50px;
+}
+.my-input-row label{
+	padding: 16px 15px;
+}
+.my-input-row input{
+	height: 50px;
+}
+.mui-input-row .mui-input-clear~.mui-icon-clear, .mui-input-row .mui-input-password~.mui-icon-eye, .mui-input-row .mui-input-speech~.mui-icon-speech
+{
+	top:15px;
+}
+.mui-input-group .mui-input-row:after{
+	height: 0;
+}
+.mui-input-row .mui-btn.send-code,.mui-btn.send-code{
+	right: 10px;
+    width: 25%;
+    top: 6px;
+    background: #ffce1b;
+    border: 1px solid #ffce1b;
+}
+#register .send-code{
+	width: 35%;
+    top: 3px;
+    float: right;
+    border-radius: 2em;
+}
+.my-btn{
+	position: absolute;
+    bottom: 20px;
+    width: 90%;
+    left: 5%;
+    height: 45px;
+    background: #ffce1b;
+    border: 1px solid #ffce1b;
+    font-size: 16px;
+}
+.cont{
+	height: 100%;
+	left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    overflow: hidden;
+    background: url(../img/bg.png);
+    background-size: cover;
+}
+.white{
+    width: 80%;
+    height:240px;
+    background: white;
+    border-radius: 7px;
+    margin: 36px auto;
+    box-shadow: 1px 2px 3px #888888;
+}
+.white p{
+    font-size: 20px;
+    display: block;
+    padding: 15px 23px;
+}
+.picture1{
+    width: 30%;
+    float: right;
+    margin-top: -70px;
+}
+.trol div{
+	float: left;
+    margin-left: 14%;
+}
+.trol div p{
+    color: #ffd21f;
+    font-size: 12px;
+    padding: 0px 0px;
+    margin: -20px 57px;
+    position: absolute;
+}
+.body ul li{
+	color: black;
+	font-size: 14px;
+}

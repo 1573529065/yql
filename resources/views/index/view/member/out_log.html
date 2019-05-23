@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{$title}</title>
+        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+        <link href="/static/css/mui.min.css" rel="stylesheet"/>
+        <link rel="stylesheet" href="/static/css/public.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/css/swiper-4.2.0.min.css"/>
+        <script src="/static/js/mui.min.js"></script>
+        <link rel="stylesheet" href="/admin/bootstrap/css/bootstrap.min.css">
+    </head>
+    <header class="mui-bar mui-bar-nav my-header" style="background-color: #2A2A2A">
+        <a href="/index/member/out_yue" class="mui-icon mui-icon-left-nav mui-pull-left" style="color: white;"></a>
+        <h1 id="title" class="mui-title" style="color: white;">{$title}</h1>
+    </header>
+    <body>
+        <div class="mui-content">
+            <div class="mui-scroll-wrapper" id="scroll" style="top: 46px;">
+                <div class="mui-scroll" >
+                    <div class="mui-table-view my-list" id="data-box">
+                         {foreach $list as $v }
+                        <ul class="my-list-item">
+                            <li class="clear"><span class="left"><span>数量:</span><span class="value">{$v.other_magic}</span></span> </li>
+                            <li class="clear"><span class="left"><span>时间:</span><span class="value">{$v.create_time}</span></span></li>
+                        </ul>
+                        {/foreach}
+                      
+                    <div class="pager">
+                        {:$list->render()}
+                </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+        
+    </body>
+    </body>
+    {include file="layout/footer" /}
+
+</html>

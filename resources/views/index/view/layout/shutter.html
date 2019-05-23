@@ -1,0 +1,14 @@
+<div class="shutter">
+    <div class="shutter-img">
+        {foreach $ban as $b}
+        <a href="#" data-shutter-title="{$b['title']}"><img class="banc" src="{$b['img']}" alt="#"></a>
+        {/foreach}
+    </div>
+    <ul class="shutter-btn">
+        <li class="prev"></li>
+        <li class="next"></li>
+    </ul>
+    <div class="shutter-desc">
+        <p>{$cf['name']}</p>
+    </div>
+</div>
