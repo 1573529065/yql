@@ -1,21 +1,15 @@
 <?php
 
-namespace App\Controller\Admin;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Logic\System;
 use App\Service\Captcha;
 use App\Service\Helper;
 use App\Service\Validator;
-use Phalcon\Di;
-use Phalcon\Mvc\Controller;
-use Phalcon\Mvc\View;
 
 class Auth extends Controller
 {
-    public function initialize()
-    {
-        $this->view->disableLevel(View::LEVEL_MAIN_LAYOUT);
-    }
 
     //登录
     public function login()
